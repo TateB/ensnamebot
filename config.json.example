@@ -1,0 +1,9 @@
+{
+    "token": "INSERTTOKENHERE",
+    "important_users": [
+        {
+            "username": "usernamehere",
+            "id": "1234567890"
+        }
+    ]
+}
