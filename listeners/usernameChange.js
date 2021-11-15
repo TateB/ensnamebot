@@ -5,7 +5,7 @@ import {
   importantUsers,
   membersNameChanged,
   submitBan,
-} from ".."
+} from "../index.js"
 
 export async function usernameChangeListener(oldUser, newUser) {
   console.log(newUser)

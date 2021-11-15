@@ -5,7 +5,7 @@ import {
   importantUsers,
   membersJoined,
   submitBan,
-} from ".."
+} from "../index.js"
 
 export async function userJoinListener(member) {
   // normalise username

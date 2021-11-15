@@ -1,6 +1,7 @@
 import { userMention } from "@discordjs/builders"
 import { MessageEmbed } from "discord.js"
-import { db, globalChecks, importantUsers, submitBan } from ".."
+import unhomoglyph from "unhomoglyph"
+import { db, globalChecks, importantUsers, submitBan } from "../index.js"
 
 // Interaction listener for commands
 export async function commandListener(interaction) {
@@ -28,8 +29,17 @@ export async function commandListener(interaction) {
     }
     case "setusercheck": {
       const user = interaction.options.getUser("user")
-      const expression = interaction.options.get("expression").value
+      const expressionFull = interaction.options.get("expression")
       const userEntry = importantUsers.find((x) => x.id === user.id)
+      var expression = ""
+
+      // if expression is left blank, generate one for the user
+      if (expressionFull === null) {
+        const username = unhomoglyph(user.username)
+        expression = `(^.*)(${username})(.*$)`
+      } else {
+        expression = expressionFull.value
+      }
 
       commandEmbed
         .setTitle("User Check Set")
@@ -65,6 +75,13 @@ export async function commandListener(interaction) {
         type === "autoban" ? false : true
       )
       interaction.reply("Emulating ban...")
+      break
+    }
+    case "normalise": {
+      const value = interaction.options.get("value").value
+      const normalised = unhomoglyph(value)
+
+      interaction.reply("Normalised value: " + normalised)
       break
     }
     default: {

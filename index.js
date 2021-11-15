@@ -10,9 +10,9 @@ import { readFileSync } from "fs"
 import { JSONFile, Low } from "lowdb"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"
-import { startListeners } from "./listeners/listeners"
+import { startListeners } from "./listeners/listeners.js"
 
-const { guildId, logChannelId, token } = JSON.parse(
+const { guildId, clientId, logChannelId, token, permittedRoleIds } = JSON.parse(
   readFileSync("./config.json")
 )
 
@@ -47,11 +47,37 @@ export const membersNameChanged = []
 export var guildLogRef
 
 client.once("ready", () => {
+  const localGuild = client.guilds.cache.get(guildId)
+  var idsArray = []
   console.log("bot ready")
+  localGuild.commands
+    .fetch()
+    .then((data) => data.filter((x) => x.applicationId === clientId))
+    .then((data) => data.map((x) => x.id))
+    .then((commIds) => (idsArray = commIds))
+    .then(() =>
+      Promise.all(idsArray.map((id) => localGuild.commands.fetch(id)))
+    )
+    .then((fetchedComms) =>
+      Promise.all(
+        fetchedComms.map((comm) =>
+          comm.permissions.set({
+            guild: guildId,
+            command: comm.id,
+            permissions: permittedRoleIds.map((roleId) => ({
+              id: roleId,
+              type: "ROLE",
+              permission: true,
+            })),
+          })
+        )
+      )
+    )
+    .then(() => console.log("permissions verified and set"))
+    .catch(console.error)
+
   // set guildlogref and store in cache
-  guildLogRef = client.guilds.cache
-    .get(guildId)
-    .channels.cache.get(logChannelId)
+  guildLogRef = localGuild.channels.cache.get(logChannelId)
 })
 
 startListeners()

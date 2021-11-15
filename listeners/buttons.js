@@ -1,6 +1,6 @@
 import { userMention } from "@discordjs/builders"
 import { MessageEmbed } from "discord.js"
-import { confirmations, db } from ".."
+import { confirmations, db } from "../index.js"
 
 export async function buttonListener(interaction) {
   const confirmationIndex = confirmations.findIndex(

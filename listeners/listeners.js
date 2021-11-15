@@ -1,4 +1,4 @@
-import { client } from ".."
+import { client } from "../index.js"
 import { buttonListener } from "./buttons.js"
 import { commandListener } from "./commands.js"
 import { userJoinListener } from "./userJoin.js"

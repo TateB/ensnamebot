@@ -8,6 +8,7 @@ const commands = [
   new SlashCommandBuilder()
     .setName("addglobalcheck")
     .setDescription("Adds a global check expression.")
+    .setDefaultPermission(false)
     .addStringOption((option) =>
       option
         .setName("type")
@@ -28,6 +29,7 @@ const commands = [
   new SlashCommandBuilder()
     .setName("setusercheck")
     .setDescription("Sets the check for a username (regex)")
+    .setDefaultPermission(false)
     .addUserOption((option) =>
       option
         .setName("user")
@@ -37,12 +39,15 @@ const commands = [
     .addStringOption((option) =>
       option
         .setName("expression")
-        .setDescription("Expression string (regex)")
-        .setRequired(true)
+        .setDescription(
+          "Expression string (regex), if left blank it will create one for you"
+        )
+        .setRequired(false)
     ),
   new SlashCommandBuilder()
     .setName("emulateban")
     .setDescription("Emulate an autoban or ban request")
+    .setDefaultPermission(false)
     .addUserOption((option) =>
       option
         .setName("user")
@@ -63,6 +68,16 @@ const commands = [
       option
         .setName("reason")
         .setDescription("Reason for ban")
+        .setRequired(true)
+    ),
+  new SlashCommandBuilder()
+    .setName("normalise")
+    .setDescription("Normalise/unhomoglyph a name")
+    .setDefaultPermission(false)
+    .addStringOption((option) =>
+      option
+        .setName("value")
+        .setDescription("Value to normalise")
         .setRequired(true)
     ),
 ].map((command) => command.toJSON())
