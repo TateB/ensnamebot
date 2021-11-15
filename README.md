@@ -15,7 +15,7 @@ node deploy-commands.js
 node index
 ```
 
-you'll need (this)[https://discord.com/api/oauth2/authorize?client_id={INSERT_BOT_ID_HERE}&permissions=2147494980&scope=applications.commands%20bot] link to invite the bot to your server
+you'll need [this](https://discord.com/api/oauth2/authorize?client_id={INSERT_BOT_ID_HERE}&permissions=2147494980&scope=applications.commands%20bot) link to invite the bot to your server
 
 ## how to use
 
