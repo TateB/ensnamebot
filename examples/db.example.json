@@ -1,0 +1,56 @@
+{
+    "importantUsers": [
+        {
+            "id": "0123456789",
+            "username": "example.eth",
+            "checkExp": "^(example)(eth)?"
+        }
+    ],
+    "globalChecks": [
+        { "type": "regex", "checkExp": "^Collab.Land$" },
+        { "type": "exact", "checkExp": "Collab.Land" },
+        { "type": "contains", "checkExp": "ensdomains" }
+    ],
+    "confirmations": [
+        {
+            "id": "0123456789",
+            "type": "request",
+            "member": {
+              "guildId": "0123456789",
+              "joinedTimestamp": 1636958925286,
+              "premiumSinceTimestamp": null,
+              "deleted": false,
+              "nickname": null,
+              "pending": false,
+              "userId": "0123456789",
+              "avatar": null,
+              "displayName": "example",
+              "roles": [
+                "0123456789"
+              ],
+              "avatarURL": null,
+              "displayAvatarURL": "https://cdn.discordapp.com/embed/avatars/1.png"
+            }
+          },
+          {
+            "id": "0123456789",
+            "type": "autoban",
+            "member": {
+              "guildId": "0123456789",
+              "joinedTimestamp": 1636958925286,
+              "premiumSinceTimestamp": null,
+              "deleted": false,
+              "nickname": null,
+              "pending": false,
+              "userId": "0123456789",
+              "avatar": null,
+              "displayName": "example",
+              "roles": [
+                "0123456789"
+              ],
+              "avatarURL": null,
+              "displayAvatarURL": "https://cdn.discordapp.com/embed/avatars/1.png"
+            }
+          }
+    ]
+}

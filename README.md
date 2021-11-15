@@ -3,7 +3,7 @@
 ## how to run (bash)
 
 ```bash
-cp examples/config.json config.json
+cp examples/config.example.json config.json
 # edit the config.json file to have your ids/token in it
 ```
 
