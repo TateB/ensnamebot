@@ -112,7 +112,6 @@ export function globalExpCheck(username) {
       switch (type) {
         case "regex": {
           const regex = new RegExp(checkExp, "i")
-          console.log(regex.test(username))
           if (regex.test(username)) resolve(checkEntry)
           break
         }
@@ -139,8 +138,6 @@ export async function submitBan(
   eventName,
   confirmationNeeded = true
 ) {
-  console.log(member, reason, eventName, confirmationNeeded)
-
   const banEmbed = new MessageEmbed().setColor("#52e5ff").addFields(
     {
       name: "User",
@@ -169,9 +166,7 @@ export async function submitBan(
           member: member,
         })
       )
-      .then(() => console.log(confirmations))
       .then(() => db.write())
-      .then((msg) => console.log(msg))
   } else {
     // confirmation not needed, so user can be banned immediately
     const buttons = new MessageActionRow().addComponents(

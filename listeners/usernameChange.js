@@ -10,7 +10,6 @@ import {
 } from "../index.js"
 
 export async function usernameChangeListener(oldUser, newUser) {
-  console.log(newUser)
   // if username hasn't changed, the member update doesn't matter
   if (oldUser.username === newUser.username) return
 
