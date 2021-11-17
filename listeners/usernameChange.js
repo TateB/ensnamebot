@@ -1,6 +1,8 @@
 import unhomoglyph from "unhomoglyph"
 import {
+  banConfirmations,
   globalExpCheck,
+  guildLogRef,
   importantUserCheck,
   importantUsers,
   membersNameChanged,
@@ -28,7 +30,8 @@ export async function usernameChangeListener(oldUser, newUser) {
     return submitBan(
       guildLogRef.guild.members.cache.get(newUser.id),
       "changed username twice in 5 minutes",
-      "member username update"
+      "member username update",
+      banConfirmations.usernameChange.fastChange
     )
 
   const importantUserMatched = await importantUserCheck(newUser.username)
@@ -36,7 +39,8 @@ export async function usernameChangeListener(oldUser, newUser) {
     return submitBan(
       guildLogRef.guild.members.cache.get(newUser.id),
       `regex match: ${importantUserMatched}`,
-      "member username update"
+      "member username update",
+      banConfirmations.usernameChange.importantUserRegex
     )
 
   const globalExpMatched = await globalExpCheck(newUser.username)
@@ -44,7 +48,8 @@ export async function usernameChangeListener(oldUser, newUser) {
     return submitBan(
       guildLogRef.guild.members.cache.get(newUser.id),
       `global match found for ${globalExpMatched.type} exp: ${globalExpMatched.checkExp}`,
-      "member username update"
+      "member username update",
+      banConfirmations.usernameChange.globalRegex
     )
 
   // keep membersNameChanged array at length of 1000

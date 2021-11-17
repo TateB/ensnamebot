@@ -16,6 +16,8 @@ const { guildId, clientId, logChannelId, token, permittedRoleIds } = JSON.parse(
   readFileSync("./config.json")
 )
 
+export const { banConfirmations } = JSON.parse(readFileSync("./config.json"))
+
 export const client = new Client({
   intents: [
     Intents.FLAGS.GUILDS,
@@ -23,6 +25,7 @@ export const client = new Client({
     Intents.FLAGS.GUILD_MESSAGE_REACTIONS,
     Intents.FLAGS.GUILD_MESSAGES,
     Intents.FLAGS.GUILD_BANS,
+    Intents.FLAGS.GUILD_PRESENCES,
   ],
   partials: ["GUILD_MEMBER", "USER", "REACTION"],
 })

@@ -1,5 +1,6 @@
 import unhomoglyph from "unhomoglyph"
 import {
+  banConfirmations,
   globalExpCheck,
   importantUserCheck,
   importantUsers,
@@ -21,7 +22,8 @@ export async function userJoinListener(member) {
     return submitBan(
       member,
       "matched username in recent joins",
-      "new user joined"
+      "new user joined",
+      banConfirmations.onJoin.recentDuplicate
     )
 
   const importantUserMatched = await importantUserCheck(username)
@@ -29,7 +31,8 @@ export async function userJoinListener(member) {
     return submitBan(
       member,
       `regex match: ${importantUserMatched}`,
-      "new user joined"
+      "new user joined",
+      banConfirmations.onJoin.importantUserRegex
     )
 
   const globalExpMatched = await globalExpCheck(username)
@@ -37,7 +40,8 @@ export async function userJoinListener(member) {
     return submitBan(
       member,
       `global match found for ${globalExpMatched.type} exp: ${globalExpMatched.checkExp}`,
-      "new user joined"
+      "new user joined",
+      banConfirmations.onJoin.globalRegex
     )
 
   // keep membersJoined array at length of 100
