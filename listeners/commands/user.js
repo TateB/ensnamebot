@@ -1,4 +1,5 @@
 import { userMention } from "@discordjs/builders"
+import unhomoglyph from "unhomoglyph"
 import { db, importantUsers } from "../../index.js"
 
 export async function userHandler(interaction, commandEmbed) {
@@ -70,7 +71,7 @@ export async function userHandler(interaction, commandEmbed) {
     }
     case "add": {
       const user = interaction.options.getUser("user")
-      const expression = `(^.*)(${userunhomoglyph(user.username)})(.*$)`
+      const expression = `(^.*)(${unhomoglyph(user.username)})(.*$)`
       const userEntry = importantUsers.find((x) => x.id === user.id)
 
       // check if user already exists in db
