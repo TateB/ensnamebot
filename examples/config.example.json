@@ -3,5 +3,18 @@
     "guildId": "INSERT_GUILD_ID_HERE",
     "clientId": "INSERT_CLIENT_ID_HERE",
     "logChannelId": "INSERT_LOG_CHANNEL_ID_HERE",
-    "permittedRoleIds": ["INSERT_PERMITTED_ROLE_IDS_HERE"]
+    "permittedRoleIds": ["INSERT_PERMITTED_ROLE_IDS_HERE"],
+    "banConfirmations": {
+        "onJoin": {
+            "recentDuplicate": true,
+            "importantUserRegex": true,
+            "globalRegex": true
+
+        },
+        "usernameChange": {
+            "fastChange": true,
+            "importantUserRegex": true,
+            "globalRegex": true
+        }
+    }
 }
