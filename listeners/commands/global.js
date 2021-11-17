@@ -26,7 +26,10 @@ export async function globalHandler(interaction, commandEmbed) {
 
       // if index doesn't exist, tell user
       if (!globalChecks[index]) {
-        interaction.reply("A global check doesn't exist at that index.")
+        interaction.reply({
+          content: "A global check doesn't exist at that index.",
+          ephemeral: true,
+        })
         break
       } else {
         commandEmbed.setTitle("Global Check Removed").addFields(
@@ -66,7 +69,10 @@ export async function globalHandler(interaction, commandEmbed) {
       }
     }
     default: {
-      interaction.reply("There was an error processing your command.")
+      interaction.reply({
+        content: "There was an error processing your command.",
+        ephemeral: true,
+      })
       break
     }
   }

@@ -1,5 +1,4 @@
 import { userMention } from "@discordjs/builders"
-import unhomoglyph from "unhomoglyph"
 import { db, importantUsers } from "../../index.js"
 
 export async function userHandler(interaction, commandEmbed) {
@@ -12,8 +11,10 @@ export async function userHandler(interaction, commandEmbed) {
 
       // if expression is left blank, generate one for the user
       if (expressionFull === null) {
-        const username = unhomoglyph(user.username)
-        expression = `(^.*)(${username})(.*$)`
+        interaction.reply({
+          content: "Please provide a regex expression.",
+          ephemeral: true,
+        })
       } else {
         expression = expressionFull.value
       }
@@ -48,7 +49,10 @@ export async function userHandler(interaction, commandEmbed) {
 
       // check if user isn't in db already
       if (!userEntry) {
-        interaction.reply("That user isn't in the checks list")
+        interaction.reply({
+          content: "That user isn't in the checks list",
+          ephemeral: true,
+        })
         break
       } else {
         commandEmbed
@@ -129,7 +133,10 @@ export async function userHandler(interaction, commandEmbed) {
       }
     }
     default: {
-      interaction.reply("There was an error processing your command.")
+      interaction.reply({
+        content: "There was an error processing your command.",
+        ephemeral: true,
+      })
       break
     }
   }
