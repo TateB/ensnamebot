@@ -54,8 +54,10 @@ client.once("ready", () => {
   // make sure bot is only in whitelisted guild on ready
   client.guilds
     .fetch()
-    .forEach((guild) =>
-      guild.id !== guildId ? guild.leave() : console.log("guild confirmed!")
+    .then((guilds) =>
+      guilds.forEach((guild) =>
+        guild.id !== guildId ? guild.leave() : console.log("guild confirmed!")
+      )
     )
 
   // make sure permissions are always correct
