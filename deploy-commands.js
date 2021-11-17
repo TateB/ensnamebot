@@ -6,46 +6,111 @@ const { guildId, clientId, token } = JSON.parse(readFileSync("./config.json"))
 
 const commands = [
   new SlashCommandBuilder()
-    .setName("addglobalcheck")
-    .setDescription("Adds a global check expression.")
+    .setName("global")
+    .setDescription("Global settings")
     .setDefaultPermission(false)
-    .addStringOption((option) =>
-      option
-        .setName("type")
-        .setDescription("Type of expression")
-        .addChoices([
-          ["Regex", "regex"],
-          ["Exact", "exact"],
-          ["Contains", "contains"],
-        ])
-        .setRequired(true)
-    )
-    .addStringOption((option) =>
-      option
-        .setName("expression")
-        .setDescription("Expression string")
-        .setRequired(true)
-    ),
-  new SlashCommandBuilder()
-    .setName("setusercheck")
-    .setDescription("Sets the check for a username (regex)")
-    .setDefaultPermission(false)
-    .addUserOption((option) =>
-      option
-        .setName("user")
-        .setDescription("User to set check")
-        .setRequired(true)
-    )
-    .addStringOption((option) =>
-      option
-        .setName("expression")
-        .setDescription(
-          "Expression string (regex), if left blank it will create one for you"
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("add")
+        .setDescription("Add a global check")
+        .addStringOption((option) =>
+          option
+            .setName("type")
+            .setDescription("Type of expression")
+            .addChoices([
+              ["Regex", "regex"],
+              ["Exact", "exact"],
+              ["Contains", "contains"],
+            ])
+            .setRequired(true)
         )
-        .setRequired(false)
+        .addStringOption((option) =>
+          option
+            .setName("expression")
+            .setDescription("Expression string")
+            .setRequired(true)
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("remove")
+        .setDescription("Remove a global check")
+        .addIntegerOption((option) =>
+          option
+            .setName("index")
+            .setDescription(
+              "Index of global check (if you don't know, use list)"
+            )
+            .setRequired(true)
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("list")
+        .setDescription("Lists global checks")
+        .addIntegerOption((option) =>
+          option
+            .setName("page")
+            .setDescription("Page of list")
+            .setRequired(false)
+        )
     ),
   new SlashCommandBuilder()
-    .setName("emulateban")
+    .setName("user")
+    .setDescription("User settings")
+    .setDefaultPermission(false)
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("set")
+        .setDescription("Set a user check")
+        .addUserOption((option) =>
+          option
+            .setName("user")
+            .setDescription("User to set check")
+            .setRequired(true)
+        )
+        .addStringOption((option) =>
+          option
+            .setName("expression")
+            .setDescription("Expression string (regex)")
+            .setRequired(true)
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("remove")
+        .setDescription("Remove a user from checks")
+        .addUserOption((option) =>
+          option
+            .setName("user")
+            .setDescription("User to remove from checks")
+            .setRequired(true)
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("add")
+        .setDescription("Add a user to checks")
+        .addUserOption((option) =>
+          option
+            .setName("user")
+            .setDescription("User to add to checks")
+            .setRequired(true)
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName("list")
+        .setDescription("Lists user checks")
+        .addIntegerOption((option) =>
+          option
+            .setName("page")
+            .setDescription("Page of list")
+            .setRequired(false)
+        )
+    ),
+  new SlashCommandBuilder()
+    .setName("emulate")
     .setDescription("Emulate an autoban or ban request")
     .setDefaultPermission(false)
     .addUserOption((option) =>
@@ -80,6 +145,10 @@ const commands = [
         .setDescription("Value to normalise")
         .setRequired(true)
     ),
+  new SlashCommandBuilder()
+    .setName("refresh")
+    .setDescription("Refresh the slash command permissions")
+    .setDefaultPermission(false),
 ].map((command) => command.toJSON())
 
 const rest = new REST({ version: "9" }).setToken(token)

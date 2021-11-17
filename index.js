@@ -48,9 +48,18 @@ export var guildLogRef
 
 client.once("ready", () => {
   const localGuild = client.guilds.cache.get(guildId)
-  var idsArray = []
+  refreshPermissions()
   console.log("bot ready")
-  localGuild.commands
+
+  // set guildlogref and store in cache
+  guildLogRef = localGuild.channels.cache.get(logChannelId)
+})
+
+export async function refreshPermissions() {
+  const localGuild = client.guilds.cache.get(guildId)
+  var idsArray = []
+
+  return localGuild.commands
     .fetch()
     .then((data) => data.filter((x) => x.applicationId === clientId))
     .then((data) => data.map((x) => x.id))
@@ -75,10 +84,7 @@ client.once("ready", () => {
     )
     .then(() => console.log("permissions verified and set"))
     .catch(console.error)
-
-  // set guildlogref and store in cache
-  guildLogRef = localGuild.channels.cache.get(logChannelId)
-})
+}
 
 startListeners()
 
