@@ -51,12 +51,25 @@ export var guildLogRef
 
 client.once("ready", () => {
   const localGuild = client.guilds.cache.get(guildId)
+  // make sure bot is only in whitelisted guild on ready
+  client.guilds
+    .fetch()
+    .forEach((guild) =>
+      guild.id !== guildId ? guild.leave() : console.log("guild confirmed!")
+    )
+
+  // make sure permissions are always correct
   refreshPermissions()
   console.log("bot ready")
 
   // set guildlogref and store in cache
   guildLogRef = localGuild.channels.cache.get(logChannelId)
 })
+
+// make sure that the guild joined is correct, or else leave immediately
+client.on("guildCreate", (guild) =>
+  guild.id !== guildId ? guild.leave() : console.log("guild confirmed!")
+)
 
 export async function refreshPermissions() {
   const localGuild = client.guilds.cache.get(guildId)
