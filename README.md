@@ -19,16 +19,50 @@ you'll need [this](https://discord.com/api/oauth2/authorize?client_id={INSERT_BO
 
 ## how to use
 
-#### /emulateban [user] [type] [reason]
+#### global
 
-for testing purposes
+##### `/global add <type> <expression>`
 
-#### /addglobalcheck [type] [expression]
-
-for adding a global check expression.
+for adding a global check
 types available are: regex, exact, contains  
 **the contains type will ban/request to ban any username with the contained string, please be cautious**
 
-#### /setusercheck [user] [expression]
+##### `/global remove <index>`
 
-for setting a user specific regex expression, useful so the global expressions don't get cluttered
+for removing a global check. index can be found with the list command
+
+##### `/global list [page]`
+
+for listing global checks and their corresponding index and type
+
+#### user
+
+##### `/user set <user> <expression>`
+
+for setting a user check. if you don't have an expression, use the add command
+
+##### `/user remove <user>`
+
+for removing a user check
+
+##### `/user add <user>`
+
+for adding a user check
+
+##### `/user list [page]`
+
+for listing users and their corresponding regex check
+
+#### other
+
+##### `/refresh`
+
+refreshes the permissions for the provided role ids in the config.
+
+##### `/normalise <string>`
+
+normalises a string so it can be used in regex
+
+##### `/emulate <user> <type> [reason]`
+
+emulates a ban. used for testing.
