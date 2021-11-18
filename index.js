@@ -177,7 +177,7 @@ export async function submitBan(
       .then((message) =>
         confirmations.push({
           id: message.id,
-          type: "request",
+          type: eventName === "emulation" ? "request-emu" : "request",
           member: member,
         })
       )
@@ -202,7 +202,7 @@ export async function submitBan(
         })
       )
       .then(() => db.write())
-      .then(() => member.ban())
+      .then(() => (eventName === "emulation" ? null : member.ban()))
   }
 }
 
