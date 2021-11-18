@@ -36,7 +36,7 @@ export async function commandListener(interaction) {
       const value = interaction.options.get("value").value
       const normalised = unhomoglyph(value)
 
-      interaction.reply("Normalised value: " + normalised)
+      interaction.reply("Normalised value: `" + normalised + "`")
       break
     }
     case "refresh": {

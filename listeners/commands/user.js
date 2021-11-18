@@ -24,7 +24,7 @@ export async function userHandler(interaction, commandEmbed) {
         .setTitle("User Check Set")
         .addFields(
           { name: "User", value: userMention(user.id) },
-          { name: "Expression", value: expression }
+          { name: "Expression", value: `\`${expression}\`` }
         )
 
       // if user already exists in array, update user
@@ -60,7 +60,7 @@ export async function userHandler(interaction, commandEmbed) {
           .setTitle("User Check Removed")
           .addFields(
             { name: "User", value: userMention(user.id) },
-            { name: "Expression", value: expression }
+            { name: "Expression", value: `\`${expression}\`` }
           )
 
         importantUsers.splice(userIndex, 1)
@@ -80,7 +80,7 @@ export async function userHandler(interaction, commandEmbed) {
           .setTitle("User Check Already Exists")
           .addFields(
             { name: "User", value: userMention(user.id) },
-            { name: "Expression", value: userEntry.checkExp }
+            { name: "Expression", value: `\`${userEntry.checkExp}\`` }
           )
 
         interaction.reply({ embeds: [commandEmbed] })
@@ -90,7 +90,7 @@ export async function userHandler(interaction, commandEmbed) {
           .setTitle("User Check Added")
           .addFields(
             { name: "User", value: userMention(user.id) },
-            { name: "Expression", value: expression }
+            { name: "Expression", value: `\`${expression}\`` }
           )
         importantUsers.push({
           id: user.id,
@@ -112,7 +112,7 @@ export async function userHandler(interaction, commandEmbed) {
         importantUsers.slice(0, 25).forEach((importantUser) => {
           commandEmbed.addField(
             importantUser.username,
-            importantUser.checkExp,
+            `\`${importantUser.checkExp}\``,
             true
           )
         })
@@ -125,7 +125,7 @@ export async function userHandler(interaction, commandEmbed) {
           .forEach((importantUser) => {
             commandEmbed.addField(
               importantUser.username,
-              importantUser.checkExp,
+              `\`${importantUser.checkExp}\``,
               true
             )
           })

@@ -9,8 +9,8 @@ export async function globalHandler(interaction, commandEmbed) {
       commandEmbed
         .setTitle("Global Check Added")
         .addFields(
-          { name: "Index", value: globalChecks.length + 1 },
-          { name: "Expression", value: expression, inline: true },
+          { name: "Index", value: `${globalChecks.length + 1}` },
+          { name: "Expression", value: `\`${expression}\``, inline: true },
           { name: "Type", value: type, inline: true }
         )
       globalChecks.push({
@@ -33,10 +33,10 @@ export async function globalHandler(interaction, commandEmbed) {
         break
       } else {
         commandEmbed.setTitle("Global Check Removed").addFields(
-          { name: "Index", value: index },
+          { name: "Index", value: `${index}` },
           {
             name: "Expression",
-            value: globalChecks[index].checkExp,
+            value: `\`${globalChecks[index].checkExp}\``,
             inline: true,
           },
           { name: "Type", value: globalChecks[index].type, inline: true }
@@ -55,14 +55,22 @@ export async function globalHandler(interaction, commandEmbed) {
       if (!page) {
         commandEmbed.setTitle("Global Checks: Page 1")
         globalChecks.slice(0, 25).forEach((check, inx) => {
-          commandEmbed.addField(`${inx}: ${check.type}`, check.checkExp, true)
+          commandEmbed.addField(
+            `${inx}: ${check.type}`,
+            `\`${check.checkExp}\``,
+            true
+          )
         })
         interaction.reply({ embeds: [commandEmbed] })
         break
       } else {
         commandEmbed.setTitle(`Global Checks: Page ${page.value}`)
         globalChecks.slice((page.value - 1) * 25, 25).forEach((check, inx) => {
-          commandEmbed.addField(`${inx}: ${check.type}`, check.checkExp, true)
+          commandEmbed.addField(
+            `${inx}: ${check.type}`,
+            `\`${check.checkExp}\``,
+            true
+          )
         })
         interaction.reply({ embeds: [commandEmbed] })
         break
