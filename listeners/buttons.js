@@ -60,7 +60,8 @@ export async function buttonListener(interaction) {
           inline: true,
         }
       )
-      targetMember.ban().catch(console.error)
+      if (confirmation.type !== "request-emu")
+        targetMember.ban().catch(console.error)
       confirmations.splice(confirmationIndex, 1)
       interaction.update({ embeds: [newLogEmbed], components: [] })
       db.write()
@@ -99,9 +100,10 @@ export async function buttonListener(interaction) {
           inline: true,
         }
       )
-      interaction.guild.members
-        .unban(confirmation.member.id || confirmation.member.userId)
-        .catch(console.error)
+      if (confirmation.type !== "request-emu")
+        interaction.guild.members
+          .unban(confirmation.member.id || confirmation.member.userId)
+          .catch(console.error)
       confirmations.splice(confirmationIndex, 1)
       interaction.update({ embeds: [newLogEmbed], components: [] })
       db.write()
