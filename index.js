@@ -110,7 +110,7 @@ startListeners()
 export function importantUserCheck(username) {
   return new Promise((resolve, reject) => {
     importantUsers.forEach((importantUser) => {
-      const regex = new RegExp(importantUser.checkExp)
+      const regex = new RegExp(importantUser.checkExp, "i")
       if (regex.test(username)) resolve(importantUser.username)
     })
     resolve(false)
@@ -131,11 +131,13 @@ export function globalExpCheck(username) {
           break
         }
         case "exact": {
-          if (username === checkExp) resolve(checkEntry)
+          if (username.toLowerCase() === checkExp.toLowerCase())
+            resolve(checkEntry)
           break
         }
         case "contains": {
-          if (username.includes(checkExp)) resolve(checkEntry)
+          if (username.toLowerCase().includes(checkExp.toLowerCase()))
+            resolve(checkEntry)
           break
         }
         default:
