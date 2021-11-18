@@ -28,7 +28,7 @@ export async function usernameChangeListener(oldUser, newUser) {
   )
     return submitBan(
       guildLogRef.guild.members.cache.get(newUser.id),
-      "changed username twice in 5 minutes",
+      `fast username change: \`${oldUser.username}\` -> \`${newUser.username}\``,
       "member username update",
       banConfirmations.usernameChange.fastChange
     )
