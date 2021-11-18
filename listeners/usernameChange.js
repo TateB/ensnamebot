@@ -16,6 +16,9 @@ export async function usernameChangeListener(oldUser, newUser) {
   // if user is configured in importantUsers, skip function
   if (importantUsers.find((x) => x.id === newUser.id)) return
 
+  const oldUsernameRef = oldUser.username
+  const newUsernameRef = newUser.username
+
   // normalises new and old usernames
   oldUser.username = unhomoglyph(oldUser.username)
   newUser.username = unhomoglyph(newUser.username)
@@ -28,7 +31,7 @@ export async function usernameChangeListener(oldUser, newUser) {
   )
     return submitBan(
       guildLogRef.guild.members.cache.get(newUser.id),
-      `fast username change: \`${oldUser.username}\` -> \`${newUser.username}\``,
+      `fast username change: \`${oldUsernameRef}\` -> \`${newUsernameRef}\``,
       "member username update",
       banConfirmations.usernameChange.fastChange
     )
