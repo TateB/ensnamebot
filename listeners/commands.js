@@ -1,7 +1,7 @@
 import { userMention } from "@discordjs/builders"
-import { MessageEmbed } from "discord.js"
+import { MessageActionRow, MessageEmbed } from "discord.js"
 import unhomoglyph from "unhomoglyph"
-import { refreshPermissions, submitBan } from "../index.js"
+import { confirmations, refreshPermissions, submitBan } from "../index.js"
 import { globalHandler } from "./commands/global.js"
 import { userHandler } from "./commands/user.js"
 
@@ -48,62 +48,83 @@ export async function commandListener(interaction) {
       break
     }
     case "bulkban": {
-      console.log("received bulkban", interaction.options.getBoolean("confirm"))
-      const starttime = interaction.options.get("starttime").value
-      const endtime = interaction.options.get("endtime").value
-      const confirm = interaction.options.getBoolean("confirm")
-      const banEmbed = new MessageEmbed().setTitle(
-        confirm ? `Banned Users` : `Going to Ban Users`
-      )
-      var count = 0
-      var exampleUser
+      const type = interaction.options.get("type").value
+      var startTime
+      var endTime
 
-      interaction.deferReply()
-
-      interaction.guild.members
-        .fetch({ force: true })
-        .then((allMembers) => {
-          const bannableMembers = allMembers
-            .filter(
-              (member) =>
-                member.joinedTimestamp >= starttime &&
-                member.joinedTimestamp <= endtime
-            )
-            .sorted(
-              (memberA, memberB) =>
-                memberA.joinedTimestamp - memberB.joinedTimestamp
-            )
-          const firstUser = bannableMembers.first()
-          const lastUser = bannableMembers.at(bannableMembers.size - 1)
-          console.log(
-            bannableMembers.size,
-            firstUser.displayName,
-            lastUser.displayName
-          )
-
-          banEmbed.addFields(
-            { name: "User Amount", value: `${bannableMembers.size}` },
-            {
-              name: "First User",
-              value: `${userMention(firstUser.id)}`,
-              inline: true,
-            },
-            {
-              name: "Last User",
-              value: `${userMention(lastUser.id)}`,
-              inline: true,
-            }
-          )
-
-          return confirm
-            ? Promise.all(
-                bannableMembers.map((member) =>
-                  member.ban({ reason: "bulk ban" })
-                )
-              )
-            : null
+      interaction
+        .deferReply()
+        .then(() => {
+          if (type === "users") {
+            startTime =
+              interaction.options.getMember("startuser").joinedTimestamp
+            endTime = interaction.options.getMember("enduser").joinedTimestamp
+          } else {
+            startTime = interaction.options.getInteger("starttime")
+            endTime = interaction.options.getInteger("endtime")
+          }
         })
-        .then(() => interaction.editReply({ embeds: [banEmbed] }))
+        .then(() => interaction.guild.members.fetch({ force: true }))
+        .then(
+          (allMembers) =>
+            (bannableMembers = allMembers
+              .filter(
+                (member) =>
+                  member.joinedTimestamp >= startTime &&
+                  member.joinedTimestamp <= endTime
+              )
+              .sorted(
+                (memberA, memberB) =>
+                  memberA.joinedTimestamp - memberB.joinedTimestamp
+              ))
+        )
+        .then((bannableMembers) =>
+          interaction.editReply({
+            embeds: [
+              new MessageEmbed()
+                .setTitle("Confirm Bulk Ban")
+                .setColor("RED")
+                .setDescription(
+                  `WARNING!!! CONFIRMING THIS WILL BAN ${bannableMembers.size} USERS!!!`
+                )
+                .addFields(
+                  { name: "User Amount", value: `${bannableMembers.size}` },
+                  {
+                    name: "First User",
+                    value: `${userMention(bannableMembers.first())}`,
+                    inline: true,
+                  },
+                  {
+                    name: "Last User",
+                    value: `${userMention(bannableMembers.last())}`,
+                    inline: true,
+                  }
+                ),
+            ],
+            components: [
+              new MessageActionRow().addComponents(
+                new MessageButton()
+                  .setCustomId("ban-bulk")
+                  .setLabel("Ban All")
+                  .setStyle("DANGER"),
+                new MessageButton()
+                  .setCustomId("cancel-bulk")
+                  .setLabel("Cancel")
+                  .setStyle("SUCCESS")
+              ),
+            ],
+          })
+        )
+        .then((message) =>
+          confirmations.push({
+            id: message.id,
+            type: "request-bulk",
+            times: {
+              startTime,
+              endTime,
+            },
+          })
+        )
       break
     }
     default: {
