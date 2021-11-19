@@ -155,13 +155,17 @@ export async function submitBan(
   eventName,
   confirmationNeeded = true
 ) {
+  const username = await member
+    .fetch(true)
+    .then((memberFetch) => memberFetch.user.username)
   const banEmbed = new MessageEmbed().setColor("#52e5ff").addFields(
     {
       name: "User",
       value: userMention(member.user.id),
     },
     { name: "Event Triggered", value: eventName },
-    { name: "Reason", value: reason }
+    { name: "Reason", value: reason },
+    { name: "Username on Trigger", value: username }
   )
 
   if (confirmationNeeded) {
