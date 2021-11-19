@@ -16,12 +16,11 @@ export async function usernameChangeListener(oldUser, newUser) {
   // if user is configured in importantUsers, skip function
   if (importantUsers.find((x) => x.id === newUser.id)) return
 
-  const oldUsernameRef = oldUser.username
-  const newUsernameRef = newUser.username
-
   // normalises new and old usernames
-  oldUser.username = unhomoglyph(oldUser.username)
-  newUser.username = unhomoglyph(newUser.username)
+  const oldUsernameRef = oldUser.username
+  const oldUsernameUn = unhomoglyph(oldUsernameRef)
+  const newUsernameRef = newUser.username
+  const newUsernameUn = unhomoglyph(newUsernameRef)
 
   // if id matches an item in membersNameChanged, and there has been less than 5 minutes since last change, autoban user
   if (
@@ -36,7 +35,7 @@ export async function usernameChangeListener(oldUser, newUser) {
       banConfirmations.usernameChange.fastChange
     )
 
-  const importantUserMatched = await importantUserCheck(newUser.username)
+  const importantUserMatched = await importantUserCheck(newUsernameUn)
   if (importantUserMatched)
     return submitBan(
       guildLogRef.guild.members.cache.get(newUser.id),
@@ -45,7 +44,7 @@ export async function usernameChangeListener(oldUser, newUser) {
       banConfirmations.usernameChange.importantUserRegex
     )
 
-  const globalExpMatched = await globalExpCheck(newUser.username)
+  const globalExpMatched = await globalExpCheck(newUsernameUn)
   if (globalExpMatched)
     return submitBan(
       guildLogRef.guild.members.cache.get(newUser.id),
