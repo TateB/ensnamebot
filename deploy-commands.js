@@ -149,6 +149,28 @@ const commands = [
     .setName("refresh")
     .setDescription("Refresh the slash command permissions")
     .setDefaultPermission(false),
+  new SlashCommandBuilder()
+    .setName("bulkban")
+    .setDescription("Bulk ban users who joined between certain times")
+    .setDefaultPermission(false)
+    .addIntegerOption((option) =>
+      option
+        .setName("starttime")
+        .setDescription("Start time for bulk ban search (EPOCH milliseconds)")
+        .setRequired(true)
+    )
+    .addIntegerOption((option) =>
+      option
+        .setName("endtime")
+        .setDescription("End time for bulk ban search (EPOCH milliseconds)")
+        .setRequired(true)
+    )
+    .addBooleanOption((option) =>
+      option
+        .setName("confirm")
+        .setDescription("Either test a bulk ban query or confirm a bulk ban")
+        .setRequired(true)
+    ),
 ].map((command) => command.toJSON())
 
 const rest = new REST({ version: "9" }).setToken(token)
