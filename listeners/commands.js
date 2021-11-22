@@ -1,9 +1,11 @@
 import { userMention } from "@discordjs/builders"
 import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js"
 import unhomoglyph from "unhomoglyph"
-import { confirmations, db, refreshPermissions, submitBan } from "../index.js"
-import { globalHandler } from "./commands/global.js"
-import { userHandler } from "./commands/user.js"
+import { globalHandler } from "../commands/global.js"
+import { userHandler } from "../commands/user.js"
+import { confirmations, db } from "../index.js"
+import { refreshPermissions } from "../util/refreshPermissions.js"
+import { submitBan } from "../util/submitBan.js"
 
 // Interaction listener for commands
 export async function commandListener(interaction) {

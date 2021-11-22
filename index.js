@@ -1,22 +1,19 @@
-import { userMention } from "@discordjs/builders"
-import {
-  Client,
-  Intents,
-  MessageActionRow,
-  MessageButton,
-  MessageEmbed,
-} from "discord.js"
+import { Client, Intents } from "discord.js"
 import { readFileSync } from "fs"
 import { JSONFile, Low } from "lowdb"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"
 import { startListeners } from "./listeners/listeners.js"
+import { refreshPermissions } from "./util/refreshPermissions.js"
 
-const { guildId, clientId, logChannelId, token, permittedRoleIds } = JSON.parse(
-  readFileSync("./config.json")
-)
-
-export const { banConfirmations } = JSON.parse(readFileSync("./config.json"))
+export const {
+  banConfirmations,
+  guildId,
+  clientId,
+  channelIds,
+  permittedRoleIds,
+  token,
+} = JSON.parse(readFileSync("./config.json"))
 
 export const client = new Client({
   intents: [
@@ -48,6 +45,7 @@ export const membersJoined = []
 export const membersNameChanged = []
 
 export var guildLogRef
+export var guildPromptRef
 
 client.once("ready", () => {
   const localGuild = client.guilds.cache.get(guildId)
@@ -65,7 +63,8 @@ client.once("ready", () => {
   console.log("bot ready")
 
   // set guildlogref and store in cache
-  guildLogRef = localGuild.channels.cache.get(logChannelId)
+  guildLogRef = localGuild.channels.cache.get(channelIds.logs)
+  guildPromptRef = localGuild.channels.cache.get(channelIds.prompts)
 })
 
 // make sure that the guild joined is correct, or else leave immediately
@@ -73,143 +72,6 @@ client.on("guildCreate", (guild) =>
   guild.id !== guildId ? guild.leave() : console.log("guild confirmed!")
 )
 
-export async function refreshPermissions() {
-  const localGuild = client.guilds.cache.get(guildId)
-  var idsArray = []
-
-  return localGuild.commands
-    .fetch()
-    .then((data) => data.filter((x) => x.applicationId === clientId))
-    .then((data) => data.map((x) => x.id))
-    .then((commIds) => (idsArray = commIds))
-    .then(() =>
-      Promise.all(idsArray.map((id) => localGuild.commands.fetch(id)))
-    )
-    .then((fetchedComms) =>
-      Promise.all(
-        fetchedComms.map((comm) =>
-          comm.permissions.set({
-            guild: guildId,
-            command: comm.id,
-            permissions: permittedRoleIds.map((roleId) => ({
-              id: roleId,
-              type: "ROLE",
-              permission: true,
-            })),
-          })
-        )
-      )
-    )
-    .then(() => console.log("permissions verified and set"))
-    .catch(console.error)
-}
-
 startListeners()
-
-// check for regex match with importantUsers
-export function importantUserCheck(username) {
-  return new Promise((resolve, reject) => {
-    importantUsers.forEach((importantUser) => {
-      const regex = new RegExp(importantUser.checkExp, "i")
-      if (regex.test(username)) resolve(importantUser.username)
-    })
-    resolve(false)
-  })
-}
-
-// check for match with global expressions array
-export function globalExpCheck(username) {
-  return new Promise((resolve, reject) => {
-    globalChecks.forEach((checkEntry) => {
-      const { type, checkExp } = checkEntry
-
-      // switch for type of check
-      switch (type) {
-        case "regex": {
-          const regex = new RegExp(checkExp, "i")
-          if (regex.test(username)) resolve(checkEntry)
-          break
-        }
-        case "exact": {
-          if (username.toLowerCase() === checkExp.toLowerCase())
-            resolve(checkEntry)
-          break
-        }
-        case "contains": {
-          if (username.toLowerCase().includes(checkExp.toLowerCase()))
-            resolve(checkEntry)
-          break
-        }
-        default:
-          break
-      }
-    })
-    resolve(false)
-  })
-}
-
-// submits ban embed to log channel, if confirmationNeeded, wait for reaction before banning
-export async function submitBan(
-  member,
-  reason,
-  eventName,
-  confirmationNeeded = true
-) {
-  const username = await member
-    .fetch(true)
-    .then((memberFetch) => memberFetch.user.username)
-  const banEmbed = new MessageEmbed().setColor("#52e5ff").addFields(
-    {
-      name: "User",
-      value: userMention(member.user.id),
-    },
-    { name: "Event Triggered", value: eventName },
-    { name: "Reason", value: reason },
-    { name: "Username on Trigger", value: username }
-  )
-
-  if (confirmationNeeded) {
-    const buttons = new MessageActionRow().addComponents(
-      new MessageButton().setCustomId("ban").setLabel("Ban").setStyle("DANGER"),
-      new MessageButton()
-        .setCustomId("cancel")
-        .setLabel("Cancel")
-        .setStyle("SUCCESS")
-    )
-
-    banEmbed.setTitle("Ban Requested")
-    guildLogRef
-      .send({ embeds: [banEmbed], components: [buttons] })
-      .then((message) =>
-        confirmations.push({
-          id: message.id,
-          type: eventName === "emulation" ? "request-emu" : "request",
-          member: member,
-        })
-      )
-      .then(() => db.write())
-  } else {
-    // confirmation not needed, so user can be banned immediately
-    const buttons = new MessageActionRow().addComponents(
-      new MessageButton()
-        .setCustomId("revert")
-        .setLabel("Revert")
-        .setStyle("DANGER")
-    )
-
-    banEmbed.setTitle("User Autobanned")
-    guildLogRef
-      .send({ embeds: [banEmbed], components: [buttons] })
-      .then((message) =>
-        confirmations.push({
-          id: message.id,
-          type: "autoban",
-          member: member,
-        })
-      )
-      .then(() => db.write())
-      .then(() => (eventName === "emulation" ? null : member.ban()))
-  }
-}
 
 client.login(token)

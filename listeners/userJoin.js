@@ -1,12 +1,7 @@
 import unhomoglyph from "unhomoglyph"
-import {
-  banConfirmations,
-  globalExpCheck,
-  importantUserCheck,
-  importantUsers,
-  membersJoined,
-  submitBan,
-} from "../index.js"
+import { banConfirmations, importantUsers, membersJoined } from "../index.js"
+import { globalExpCheck, importantUserCheck } from "../util/checks.js"
+import { submitBan } from "../util/submitBan.js"
 
 export async function userJoinListener(member) {
   // normalise username
@@ -18,7 +13,9 @@ export async function userJoinListener(member) {
   if (importantUsers.find((x) => x.id === id)) return
 
   // if in membersJoined there is a match in username, autoban user
-  if (membersJoined.find((x) => x.user.username === username))
+  if (
+    membersJoined.find((x) => x.user.username === username && x.user.id !== id)
+  )
     return submitBan(
       member,
       "matched username in recent joins",
