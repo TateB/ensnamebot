@@ -2,7 +2,10 @@
     "token": "INSERT_TOKEN_HERE",
     "guildId": "INSERT_GUILD_ID_HERE",
     "clientId": "INSERT_CLIENT_ID_HERE",
-    "logChannelId": "INSERT_LOG_CHANNEL_ID_HERE",
+    "channelIds": {
+        "logs": "INSERT_LOG_CHANNEL_ID_HERE",
+        "prompts": "INSERT_PROMPT_CHANNEL_ID_HERE"
+    },
     "permittedRoleIds": ["INSERT_PERMITTED_ROLE_IDS_HERE"],
     "banConfirmations": {
         "onJoin": {
