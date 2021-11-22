@@ -3,7 +3,7 @@ import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js"
 import unhomoglyph from "unhomoglyph"
 import { globalHandler } from "../commands/global.js"
 import { userHandler } from "../commands/user.js"
-import { confirmations, db } from "../index.js"
+import { confirmations, db, guildPromptRef } from "../index.js"
 import { refreshPermissions } from "../util/refreshPermissions.js"
 import { submitBan } from "../util/submitBan.js"
 
@@ -48,6 +48,25 @@ export async function commandListener(interaction) {
         interaction.followUp("Refreshed slash command permissions!")
       )
       break
+    }
+    case "clear": {
+      const confirmsToClear = confirmations.filter((x) => x.type === "request")
+      return interaction
+        .deferReply({ ephemeral: true })
+        .then(() =>
+          Promise.all(
+            confirmsToClear.map((confirm) => {
+              const index = confirmations.findIndex((x) => x === confirm)
+              confirmations.splice(index, 1)
+              return guildPromptRef.messages
+                .fetch(confirm.id)
+                .then((msg) => msg.delete())
+                .catch(console.error)
+            })
+          )
+        )
+        .then(() => db.write())
+        .then(() => interaction.editReply("Cleared all prompts!"))
     }
     case "bulkban": {
       const type = interaction.options.getSubcommand()

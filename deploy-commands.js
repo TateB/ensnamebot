@@ -189,6 +189,10 @@ const commands = [
             .setRequired(true)
         )
     ),
+  new SlashCommandBuilder()
+    .setName("clear")
+    .setDescription("Clears/cancels all existing ban prompts")
+    .setDefaultPermission(false),
 ].map((command) => command.toJSON())
 
 const rest = new REST({ version: "9" }).setToken(token)

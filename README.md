@@ -70,3 +70,7 @@ emulates a ban. used for testing.
 ##### `/bulkban <type> <starttime/startuser> <endtime/enduser>`
 
 bulkbans users that joined between a certain time period
+
+##### `/clear`
+
+clears all prompts in the prompts channel
