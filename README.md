@@ -74,3 +74,39 @@ bulkbans users that joined between a certain time period
 ##### `/clear`
 
 clears all prompts in the prompts channel
+
+##### `/sweep`
+
+manually runs a sweep of all guild members to match expressions
+
+## config
+
+```JSON
+{
+    "token": "INSERT_TOKEN_HERE", // discord bot token
+    "guildId": "INSERT_GUILD_ID_HERE", // discord guild id
+    "clientId": "INSERT_CLIENT_ID_HERE", // discord bot client id
+    "channelIds": {
+        "logs": "INSERT_LOG_CHANNEL_ID_HERE", // log channel id
+        "prompts": "INSERT_PROMPT_CHANNEL_ID_HERE" // prompts channel id
+    },
+    "permittedRoleIds": ["INSERT_PERMITTED_ROLE_IDS_HERE"], // roles permitted to use application commands
+    "autoSweepTime": 5, // interval between each automatic sweep (in minutes)
+    "banConfirmations": { // bools for if a event requires a prompt before banning (true = prompt required)
+        "onJoin": { // user join event
+            "recentDuplicate": true, // user with same username joined in last 100 users
+            "importantUserRegex": true, // important user expression match
+            "globalRegex": true // global expression match
+        },
+        "usernameChange": { // user username change event
+            "fastChange": true, // user quickly changed username more than 1 time
+            "importantUserRegex": true, // important user expression match
+            "globalRegex": true // global expression match
+        },
+        "manualSweep": { // manual member sweep event
+            "importantUserRegex": true, // important user expression match
+            "globalRegex": true // global expression match
+        }
+    }
+}
+```
