@@ -1,6 +1,6 @@
 import { userMention } from "@discordjs/builders"
 import { MessageEmbed } from "discord.js"
-import { confirmations, db } from "../index.js"
+import { confirmations, db, guildLogRef } from "../index.js"
 
 export async function buttonListener(interaction) {
   const confirmationIndex = confirmations.findIndex(
@@ -19,7 +19,10 @@ export async function buttonListener(interaction) {
   if (!hasBanPermissions) return
 
   // if bulk ban, pass to different handler
-  if (interaction.customId === "ban-bulk")
+  if (
+    interaction.customId === "ban-bulk" ||
+    interaction.customId === "cancel-bulk"
+  )
     return bulkBan(interaction, confirmation, confirmationIndex)
 
   const newLogEmbed = new MessageEmbed().setColor("#52e5ff")
@@ -121,6 +124,17 @@ export async function buttonListener(interaction) {
 
 // bulk ban function for banning users between specific timestamps.
 async function bulkBan(interaction, confirmation, confirmationIndex) {
+  if (interaction.customId === "cancel-bulk") {
+    const newLogEmbed = new MessageEmbed()
+      .setColor("#52e5ff")
+      .setTitle("Bulk Ban Cancelled")
+
+    confirmations.splice(confirmationIndex, 1)
+    interaction.update({ embeds: [newLogEmbed], components: [] })
+    db.write()
+    return
+  }
+
   const newLogEmbed = new MessageEmbed()
     .setColor("#52e5ff")
     .setTitle("Banning Members...")
@@ -133,12 +147,15 @@ async function bulkBan(interaction, confirmation, confirmationIndex) {
 
   // defer update because it might take a while before the first message comes through
   interaction
-    .deferUpdate()
+    .update({
+      embeds: [new MessageEmbed().setTitle("Starting bulk ban...")],
+      components: [],
+    })
     .then(() => interaction.guild.members.fetch({ force: true }))
     .then(
       // filter down members to only those between the joined timestamps, and sort the array by joined timestamp
       (allMembers) =>
-        (bannableMembers = allMembers
+        allMembers
           .filter(
             (member) =>
               member.joinedTimestamp >= confirmation.times.startTime &&
@@ -147,7 +164,7 @@ async function bulkBan(interaction, confirmation, confirmationIndex) {
           .sorted(
             (memberA, memberB) =>
               memberA.joinedTimestamp - memberB.joinedTimestamp
-          ))
+          )
     )
     .then((bannedMembers) => {
       // send the first percent update at 0
@@ -185,7 +202,17 @@ async function bulkBan(interaction, confirmation, confirmationIndex) {
         { name: "Errored Users", value: `${erroredUsers}`, inline: true }
       )
       confirmations.splice(confirmationIndex, 1)
-      interaction.update({ embeds: [newLogEmbed], components: [] })
+      interaction.editReply({ embeds: [newLogEmbed], components: [] })
+      newLogEmbed.setTitle("New Event: Bulk Ban")
+      newLogEmbed.setFields(
+        { name: "Users Banned", value: `${bannedNum}`, inline: true },
+        { name: "Errored Users", value: `${erroredUsers}`, inline: true },
+        {
+          name: "Initialised By",
+          value: `${userMention(interaction.member.id)}`,
+        }
+      )
+      guildLogRef.send({ embeds: [newLogEmbed] })
       db.write()
       return
     })
@@ -198,9 +225,7 @@ async function bulkBan(interaction, confirmation, confirmationIndex) {
         { name: "Progress", value: `${percent}%`, inline: true },
         {
           name: "Est. Time Remaining",
-          value: bannedNum
-            ? `${estTimeRemaining.getMinutes()}m ${estTimeRemaining.getSeconds()}s`
-            : "Unknown",
+          value: "Cancelled",
           inline: true,
         },
         {
@@ -211,13 +236,13 @@ async function bulkBan(interaction, confirmation, confirmationIndex) {
         { name: "Errored Users", value: `${erroredUsers}`, inline: true }
       )
       confirmations.splice(confirmationIndex, 1)
-      interaction.update({ embeds: [newLogEmbed], components: [] })
+      interaction.editReply({ embeds: [newLogEmbed], components: [] })
       db.write()
       return
     })
 
   function updateProgress() {
-    totalBans + 1
+    bannedNum += 1
     const newPercent = (bannedNum / totalBans) * 100
     const percentArray = [0, 100]
     // create a percentArray for checkpoints
@@ -263,6 +288,6 @@ async function bulkBan(interaction, confirmation, confirmationIndex) {
       },
       { name: "Errored Users", value: `${erroredUsers}`, inline: true }
     )
-    return interaction.update({ embeds: [newLogEmbed], components: [] })
+    return interaction.editReply({ embeds: [newLogEmbed], components: [] })
   }
 }

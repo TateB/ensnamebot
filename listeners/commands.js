@@ -1,7 +1,7 @@
 import { userMention } from "@discordjs/builders"
-import { MessageActionRow, MessageEmbed } from "discord.js"
+import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js"
 import unhomoglyph from "unhomoglyph"
-import { confirmations, refreshPermissions, submitBan } from "../index.js"
+import { confirmations, db, refreshPermissions, submitBan } from "../index.js"
 import { globalHandler } from "./commands/global.js"
 import { userHandler } from "./commands/user.js"
 
@@ -48,7 +48,7 @@ export async function commandListener(interaction) {
       break
     }
     case "bulkban": {
-      const type = interaction.options.get("type").value
+      const type = interaction.options.getSubcommand()
       var startTime
       var endTime
 
@@ -63,20 +63,23 @@ export async function commandListener(interaction) {
             startTime = interaction.options.getInteger("starttime")
             endTime = interaction.options.getInteger("endtime")
           }
+
+          // if times are in wrong order, swap them
+          if (startTime > endTime)
+            endTime = [startTime, (startTime = endTime)][0]
         })
         .then(() => interaction.guild.members.fetch({ force: true }))
-        .then(
-          (allMembers) =>
-            (bannableMembers = allMembers
-              .filter(
-                (member) =>
-                  member.joinedTimestamp >= startTime &&
-                  member.joinedTimestamp <= endTime
-              )
-              .sorted(
-                (memberA, memberB) =>
-                  memberA.joinedTimestamp - memberB.joinedTimestamp
-              ))
+        .then((allMembers) =>
+          allMembers
+            .filter(
+              (member) =>
+                member.joinedTimestamp >= startTime &&
+                member.joinedTimestamp <= endTime
+            )
+            .sorted(
+              (memberA, memberB) =>
+                memberA.joinedTimestamp - memberB.joinedTimestamp
+            )
         )
         .then((bannableMembers) =>
           interaction.editReply({
@@ -91,12 +94,12 @@ export async function commandListener(interaction) {
                   { name: "User Amount", value: `${bannableMembers.size}` },
                   {
                     name: "First User",
-                    value: `${userMention(bannableMembers.first())}`,
+                    value: `${userMention(bannableMembers.first().id)}`,
                     inline: true,
                   },
                   {
                     name: "Last User",
-                    value: `${userMention(bannableMembers.last())}`,
+                    value: `${userMention(bannableMembers.last().id)}`,
                     inline: true,
                   }
                 ),
@@ -125,6 +128,7 @@ export async function commandListener(interaction) {
             },
           })
         )
+        .then(() => db.write())
       break
     }
     default: {
