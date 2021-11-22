@@ -1,6 +1,8 @@
 import { userMention } from "@discordjs/builders"
 import { MessageEmbed } from "discord.js"
+import { bulkBan } from "../buttons/bulkBan.js"
 import { confirmations, db } from "../index.js"
+import { createLogEntryWithTimeout } from "../util/logCreator.js"
 
 export async function buttonListener(interaction) {
   const confirmationIndex = confirmations.findIndex(
@@ -17,6 +19,13 @@ export async function buttonListener(interaction) {
 
   // user needs ban permissions as buttons can ban
   if (!hasBanPermissions) return
+
+  // if bulk ban, pass to different handler
+  if (
+    interaction.customId === "ban-bulk" ||
+    interaction.customId === "cancel-bulk"
+  )
+    return bulkBan(interaction, confirmation, confirmationIndex)
 
   const newLogEmbed = new MessageEmbed().setColor("#52e5ff")
 
@@ -39,9 +48,14 @@ export async function buttonListener(interaction) {
     newLogEmbed
       .setTitle("User Already Banned")
       .setDescription("Action failed because user is already banned.")
+      .setFields({ name: "Banned User", value: confirmation.user.displayName })
+      .setFields({
+        name: "Initiated By",
+        value: userMention(interaction.member.id),
+      })
     confirmations.splice(confirmationIndex, 1)
-    interaction.update({ embeds: [newLogEmbed], components: [] })
     db.write()
+    createLogEntryWithTimeout(newLogEmbed, interaction)
     return
   }
 
@@ -63,8 +77,8 @@ export async function buttonListener(interaction) {
       if (confirmation.type !== "request-emu")
         targetMember.ban().catch(console.error)
       confirmations.splice(confirmationIndex, 1)
-      interaction.update({ embeds: [newLogEmbed], components: [] })
       db.write()
+      createLogEntryWithTimeout(newLogEmbed, interaction)
       break
     }
     case "cancel": {
@@ -81,8 +95,8 @@ export async function buttonListener(interaction) {
         }
       )
       confirmations.splice(confirmationIndex, 1)
-      interaction.update({ embeds: [newLogEmbed], components: [] })
       db.write()
+      createLogEntryWithTimeout(newLogEmbed, interaction)
       break
     }
     case "revert": {
@@ -105,8 +119,8 @@ export async function buttonListener(interaction) {
           .unban(confirmation.member.id || confirmation.member.userId)
           .catch(console.error)
       confirmations.splice(confirmationIndex, 1)
-      interaction.update({ embeds: [newLogEmbed], components: [] })
       db.write()
+      createLogEntryWithTimeout(newLogEmbed, interaction)
       break
     }
     default: {

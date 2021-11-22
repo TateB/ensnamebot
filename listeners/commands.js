@@ -1,9 +1,11 @@
 import { userMention } from "@discordjs/builders"
-import { MessageEmbed } from "discord.js"
+import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js"
 import unhomoglyph from "unhomoglyph"
-import { refreshPermissions, submitBan } from "../index.js"
-import { globalHandler } from "./commands/global.js"
-import { userHandler } from "./commands/user.js"
+import { globalHandler } from "../commands/global.js"
+import { userHandler } from "../commands/user.js"
+import { confirmations, db, guildPromptRef } from "../index.js"
+import { refreshPermissions } from "../util/refreshPermissions.js"
+import { submitBan } from "../util/submitBan.js"
 
 // Interaction listener for commands
 export async function commandListener(interaction) {
@@ -47,63 +49,107 @@ export async function commandListener(interaction) {
       )
       break
     }
+    case "clear": {
+      const confirmsToClear = confirmations.filter((x) => x.type === "request")
+      return interaction
+        .deferReply({ ephemeral: true })
+        .then(() =>
+          Promise.all(
+            confirmsToClear.map((confirm) => {
+              const index = confirmations.findIndex((x) => x === confirm)
+              confirmations.splice(index, 1)
+              return guildPromptRef.messages
+                .fetch(confirm.id)
+                .then((msg) => msg.delete())
+                .catch(console.error)
+            })
+          )
+        )
+        .then(() => db.write())
+        .then(() => interaction.editReply("Cleared all prompts!"))
+    }
     case "bulkban": {
-      console.log("received bulkban", interaction.options.getBoolean("confirm"))
-      const starttime = interaction.options.get("starttime").value
-      const endtime = interaction.options.get("endtime").value
-      const confirm = interaction.options.getBoolean("confirm")
-      const banEmbed = new MessageEmbed().setTitle(
-        confirm ? `Banned Users` : `Going to Ban Users`
-      )
-      var count = 0
-      var exampleUser
+      const type = interaction.options.getSubcommand()
+      var startTime
+      var endTime
 
-      interaction.deferReply()
+      interaction
+        .deferReply()
+        .then(() => {
+          if (type === "users") {
+            startTime =
+              interaction.options.getMember("startuser").joinedTimestamp
+            endTime = interaction.options.getMember("enduser").joinedTimestamp
+          } else {
+            startTime = interaction.options.getInteger("starttime")
+            endTime = interaction.options.getInteger("endtime")
+          }
 
-      interaction.guild.members
-        .fetch({ force: true })
-        .then((allMembers) => {
-          const bannableMembers = allMembers
+          // if times are in wrong order, swap them
+          if (startTime > endTime)
+            endTime = [startTime, (startTime = endTime)][0]
+        })
+        .then(() => interaction.guild.members.fetch({ force: true }))
+        .then((allMembers) =>
+          allMembers
             .filter(
               (member) =>
-                member.joinedTimestamp >= starttime &&
-                member.joinedTimestamp <= endtime
+                member.joinedTimestamp >= startTime &&
+                member.joinedTimestamp <= endTime
             )
             .sorted(
               (memberA, memberB) =>
                 memberA.joinedTimestamp - memberB.joinedTimestamp
             )
-          const firstUser = bannableMembers.first()
-          const lastUser = bannableMembers.at(bannableMembers.size - 1)
-          console.log(
-            bannableMembers.size,
-            firstUser.displayName,
-            lastUser.displayName
-          )
-
-          banEmbed.addFields(
-            { name: "User Amount", value: `${bannableMembers.size}` },
-            {
-              name: "First User",
-              value: `${userMention(firstUser.id)}`,
-              inline: true,
-            },
-            {
-              name: "Last User",
-              value: `${userMention(lastUser.id)}`,
-              inline: true,
-            }
-          )
-
-          return confirm
-            ? Promise.all(
-                bannableMembers.map((member) =>
-                  member.ban({ reason: "bulk ban" })
+        )
+        .then((bannableMembers) =>
+          interaction.editReply({
+            embeds: [
+              new MessageEmbed()
+                .setTitle("Confirm Bulk Ban")
+                .setColor("RED")
+                .setDescription(
+                  `WARNING!!! CONFIRMING THIS WILL BAN ${bannableMembers.size} USERS!!!`
                 )
-              )
-            : null
-        })
-        .then(() => interaction.editReply({ embeds: [banEmbed] }))
+                .addFields(
+                  { name: "User Amount", value: `${bannableMembers.size}` },
+                  {
+                    name: "First User",
+                    value: `${userMention(bannableMembers.first().id)}`,
+                    inline: true,
+                  },
+                  {
+                    name: "Last User",
+                    value: `${userMention(bannableMembers.last().id)}`,
+                    inline: true,
+                  }
+                ),
+            ],
+            components: [
+              new MessageActionRow().addComponents(
+                new MessageButton()
+                  .setCustomId("ban-bulk")
+                  .setLabel("Ban All")
+                  .setStyle("DANGER"),
+                new MessageButton()
+                  .setCustomId("cancel-bulk")
+                  .setLabel("Cancel")
+                  .setStyle("SUCCESS")
+              ),
+            ],
+          })
+        )
+        .then((message) =>
+          confirmations.push({
+            id: message.id,
+            type: "request-bulk",
+            times: {
+              startTime,
+              endTime,
+            },
+          })
+        )
+        .then(() => db.write())
       break
     }
     default: {

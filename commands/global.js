@@ -1,4 +1,4 @@
-import { db, globalChecks } from "../../index.js"
+import { db, globalChecks } from "../index.js"
 
 export async function globalHandler(interaction, commandEmbed) {
   switch (interaction.options.getSubcommand()) {

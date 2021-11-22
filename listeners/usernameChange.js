@@ -1,13 +1,12 @@
 import unhomoglyph from "unhomoglyph"
 import {
   banConfirmations,
-  globalExpCheck,
   guildLogRef,
-  importantUserCheck,
   importantUsers,
   membersNameChanged,
-  submitBan,
 } from "../index.js"
+import { globalExpCheck, importantUserCheck } from "../util/checks.js"
+import { submitBan } from "../util/submitBan.js"
 
 export async function usernameChangeListener(oldUser, newUser) {
   // if username hasn't changed, the member update doesn't matter
@@ -22,7 +21,7 @@ export async function usernameChangeListener(oldUser, newUser) {
   const newUsernameRef = newUser.username
   const newUsernameUn = unhomoglyph(newUsernameRef)
 
-  // if id matches an item in membersNameChanged, and there has been less than 5 minutes since last change, autoban user
+  /* REMOVED: if id matches an item in membersNameChanged, and there has been less than 5 minutes since last change, autoban user
   if (
     membersNameChanged.find(
       (x) => x.id === newUser.id && x.timeSet < Date.now() + 300000
@@ -33,7 +32,7 @@ export async function usernameChangeListener(oldUser, newUser) {
       `fast username change: \`${oldUsernameRef}\` -> \`${newUsernameRef}\``,
       "member username update",
       banConfirmations.usernameChange.fastChange
-    )
+    ) */
 
   const importantUserMatched = await importantUserCheck(newUsernameUn)
   if (importantUserMatched)

@@ -1,6 +1,6 @@
 import { userMention } from "@discordjs/builders"
 import unhomoglyph from "unhomoglyph"
-import { db, importantUsers } from "../../index.js"
+import { db, importantUsers } from "../index.js"
 
 export async function userHandler(interaction, commandEmbed) {
   switch (interaction.options.getSubcommand()) {

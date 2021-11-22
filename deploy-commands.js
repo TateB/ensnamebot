@@ -153,24 +153,46 @@ const commands = [
     .setName("bulkban")
     .setDescription("Bulk ban users who joined between certain times")
     .setDefaultPermission(false)
-    .addIntegerOption((option) =>
-      option
-        .setName("starttime")
-        .setDescription("Start time for bulk ban search (EPOCH milliseconds)")
-        .setRequired(true)
+    .addSubcommand((command) =>
+      command
+        .setName("users")
+        .setDescription("Use users to calculate bulk ban")
+        .addUserOption((option) =>
+          option
+            .setName("startuser")
+            .setDescription("Starting user for bulk ban")
+            .setRequired(true)
+        )
+        .addUserOption((option) =>
+          option
+            .setName("enduser")
+            .setDescription("Ending user for bulk ban")
+            .setRequired(true)
+        )
     )
-    .addIntegerOption((option) =>
-      option
-        .setName("endtime")
-        .setDescription("End time for bulk ban search (EPOCH milliseconds)")
-        .setRequired(true)
-    )
-    .addBooleanOption((option) =>
-      option
-        .setName("confirm")
-        .setDescription("Either test a bulk ban query or confirm a bulk ban")
-        .setRequired(true)
+    .addSubcommand((command) =>
+      command
+        .setName("times")
+        .setDescription("Use times to calculate bulk ban")
+        .addIntegerOption((option) =>
+          option
+            .setName("starttime")
+            .setDescription(
+              "Start time for bulk ban search (EPOCH milliseconds)"
+            )
+            .setRequired(true)
+        )
+        .addIntegerOption((option) =>
+          option
+            .setName("endtime")
+            .setDescription("End time for bulk ban search (EPOCH milliseconds)")
+            .setRequired(true)
+        )
     ),
+  new SlashCommandBuilder()
+    .setName("clear")
+    .setDescription("Clears/cancels all existing ban prompts")
+    .setDefaultPermission(false),
 ].map((command) => command.toJSON())
 
 const rest = new REST({ version: "9" }).setToken(token)
