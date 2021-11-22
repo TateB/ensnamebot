@@ -48,11 +48,20 @@ export async function buttonListener(interaction) {
     newLogEmbed
       .setTitle("User Already Banned")
       .setDescription("Action failed because user is already banned.")
-      .setFields({ name: "Banned User", value: confirmation.user.displayName })
       .setFields({
-        name: "Initiated By",
-        value: userMention(interaction.member.id),
+        name: "Banned User",
+        value: confirmation.member.displayName,
       })
+      .setFields(
+        {
+          name: "Banned User",
+          value: confirmation.member.displayName,
+        },
+        {
+          name: "Initiated By",
+          value: userMention(interaction.member.id),
+        }
+      )
     confirmations.splice(confirmationIndex, 1)
     db.write()
     createLogEntryWithTimeout(newLogEmbed, interaction)
