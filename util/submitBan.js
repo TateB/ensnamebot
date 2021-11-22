@@ -1,6 +1,12 @@
 import { userMention } from "@discordjs/builders"
 import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js"
-import { confirmations, db, guildLogRef, guildPromptRef } from "../index.js"
+import {
+  confirmations,
+  db,
+  guildLogRef,
+  guildPromptRef,
+  ignoredUsers,
+} from "../index.js"
 
 // submits ban embed to log channel, if confirmationNeeded, wait for reaction before banning
 export async function submitBan(
@@ -9,6 +15,19 @@ export async function submitBan(
   eventName,
   confirmationNeeded = true
 ) {
+  // if user is an ignored user, don't submit a ban
+  if (ignoredUsers.find((x) => x === member.user.id)) return
+
+  // make sure if it's a manual sweep that the user doesn't already have a prompt listed (so no spam)
+  if (
+    eventName === "manual sweep" &&
+    confirmations.find(
+      (x) =>
+        x.member.id === member.user.id || x.member.userId === member.user.id
+    )
+  )
+    return
+
   const username = await member
     .fetch(true)
     .then((memberFetch) => memberFetch.user.username)
@@ -28,7 +47,11 @@ export async function submitBan(
       new MessageButton()
         .setCustomId("cancel")
         .setLabel("Cancel")
-        .setStyle("SUCCESS")
+        .setStyle("SUCCESS"),
+      new MessageButton()
+        .setCustomId("ignore")
+        .setLabel("Ignore")
+        .setStyle("SECONDARY")
     )
 
     banEmbed.setTitle("Ban Requested")

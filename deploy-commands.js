@@ -193,6 +193,10 @@ const commands = [
     .setName("clear")
     .setDescription("Clears/cancels all existing ban prompts")
     .setDefaultPermission(false),
+  new SlashCommandBuilder()
+    .setName("sweep")
+    .setDescription("Manually sweeps all current users for matches")
+    .setDefaultPermission(false),
 ].map((command) => command.toJSON())
 
 const rest = new REST({ version: "9" }).setToken(token)

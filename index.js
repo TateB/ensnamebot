@@ -5,6 +5,7 @@ import { dirname, join } from "path"
 import { fileURLToPath } from "url"
 import { startListeners } from "./listeners/listeners.js"
 import { refreshPermissions } from "./util/refreshPermissions.js"
+import { startSweepInterval } from "./util/sweep.js"
 
 export const {
   banConfirmations,
@@ -13,6 +14,7 @@ export const {
   channelIds,
   permittedRoleIds,
   token,
+  autoSweepTime,
 } = JSON.parse(readFileSync("./config.json"))
 
 export const client = new Client({
@@ -34,9 +36,15 @@ const file = join(__dirname, "db.json")
 const adapter = new JSONFile(file)
 export const db = new Low(adapter)
 await db.read()
-db.data ||= { importantUsers: [], globalChecks: [], confirmations: [] }
+db.data ||= {
+  importantUsers: [],
+  ignoredUsers: [],
+  globalChecks: [],
+  confirmations: [],
+}
 
-export const { importantUsers, globalChecks, confirmations } = db.data
+export const { importantUsers, ignoredUsers, globalChecks, confirmations } =
+  db.data
 
 // stores most recent 100 member joins
 export const membersJoined = []
@@ -57,6 +65,13 @@ client.once("ready", () => {
         guild.id !== guildId ? guild.leave() : console.log("guild confirmed!")
       )
     )
+
+  // fetch all members to cache so their username changes can be caught (?)
+  // not actually sure that this does anything
+  localGuild.members.fetch({ force: true })
+
+  // start auto sweep interval
+  startSweepInterval()
 
   // make sure permissions are always correct
   refreshPermissions()

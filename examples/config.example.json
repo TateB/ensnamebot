@@ -7,15 +7,19 @@
         "prompts": "INSERT_PROMPT_CHANNEL_ID_HERE"
     },
     "permittedRoleIds": ["INSERT_PERMITTED_ROLE_IDS_HERE"],
+    "autoSweepTime": 5,
     "banConfirmations": {
         "onJoin": {
             "recentDuplicate": true,
             "importantUserRegex": true,
             "globalRegex": true
-
         },
         "usernameChange": {
             "fastChange": true,
+            "importantUserRegex": true,
+            "globalRegex": true
+        },
+        "manualSweep": {
             "importantUserRegex": true,
             "globalRegex": true
         }

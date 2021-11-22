@@ -1,7 +1,7 @@
 import { userMention } from "@discordjs/builders"
 import { MessageEmbed } from "discord.js"
 import { bulkBan } from "../buttons/bulkBan.js"
-import { confirmations, db } from "../index.js"
+import { confirmations, db, ignoredUsers } from "../index.js"
 import { createLogEntryWithTimeout } from "../util/logCreator.js"
 
 export async function buttonListener(interaction) {
@@ -128,6 +128,26 @@ export async function buttonListener(interaction) {
           .unban(confirmation.member.id || confirmation.member.userId)
           .catch(console.error)
       confirmations.splice(confirmationIndex, 1)
+      db.write()
+      createLogEntryWithTimeout(newLogEmbed, interaction)
+      break
+    }
+    case "ignore": {
+      newLogEmbed.setTitle("User Ignored").addFields(
+        {
+          name: "User",
+          value: userMention(
+            confirmation.member.id || confirmation.member.userId
+          ),
+          inline: true,
+        },
+        {
+          name: "Ignored By",
+          value: userMention(interaction.user.id),
+          inline: true,
+        }
+      )
+      ignoredUsers.push(confirmation.member.id || confirmation.member.userId)
       db.write()
       createLogEntryWithTimeout(newLogEmbed, interaction)
       break

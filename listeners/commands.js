@@ -6,6 +6,7 @@ import { userHandler } from "../commands/user.js"
 import { confirmations, db, guildPromptRef } from "../index.js"
 import { refreshPermissions } from "../util/refreshPermissions.js"
 import { submitBan } from "../util/submitBan.js"
+import { runSweep } from "../util/sweep.js"
 
 // Interaction listener for commands
 export async function commandListener(interaction) {
@@ -67,6 +68,12 @@ export async function commandListener(interaction) {
         )
         .then(() => db.write())
         .then(() => interaction.editReply("Cleared all prompts!"))
+    }
+    case "sweep": {
+      return interaction
+        .deferReply({ ephemeral: true })
+        .then(() => runSweep())
+        .then(() => interaction.reply("Manual sweep complete!"))
     }
     case "bulkban": {
       const type = interaction.options.getSubcommand()
