@@ -1,14 +1,16 @@
 import { Collection } from "discord.js"
 import { fetchCmdFiles } from "../util/fetchCmdFiles.js"
 
-const commands = new Collection()
-await fetchCmdFiles("commands").then((fetchedCmds) =>
-  fetchedCmds.forEach((cmd) => commands.set(cmd.data.name, cmd))
-)
+export async function fetchSetCommands(client) {
+  client.commands = new Collection()
+  await fetchCmdFiles("commands").then((fetchedCmds) =>
+    fetchedCmds.forEach((cmd) => client.commands.set(cmd.data.name, cmd))
+  )
+}
 
 // Interaction listener for commands
 export async function commandListener(interaction) {
-  const command = commands.get(interaction.commandName)
+  const command = interaction.client.commands.get(interaction.commandName)
   try {
     await command.execute(interaction)
   } catch (error) {

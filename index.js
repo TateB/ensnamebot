@@ -3,11 +3,10 @@ import { readFileSync } from "fs"
 import { JSONFile, Low } from "lowdb"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"
+import { fetchSetCommands } from "./listeners/commands.js"
 import { startListeners } from "./listeners/listeners.js"
 import { refreshPermissions } from "./util/refreshPermissions.js"
 import { startSweepInterval } from "./util/sweep.js"
-
-console.log("starting...")
 
 export const {
   banConfirmations,
@@ -79,6 +78,9 @@ client.once("ready", () => {
   refreshPermissions()
   console.log("bot ready")
 
+  // fetch and set commands so they can be used with command handler
+  fetchSetCommands(client)
+
   // set guildlogref and store in cache
   guildLogRef = localGuild.channels.cache.get(channelIds.logs)
   guildPromptRef = localGuild.channels.cache.get(channelIds.prompts)
@@ -91,4 +93,7 @@ client.on("guildCreate", (guild) =>
 
 startListeners()
 
-client.login(token)
+client
+  .login(token)
+  .then()
+  .catch((err) => console.log(err))

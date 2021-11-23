@@ -1,4 +1,5 @@
 import { SlashCommandBuilder } from "@discordjs/builders"
+import unhomoglyph from "unhomoglyph"
 
 export const data = new SlashCommandBuilder()
   .setName("normalise")

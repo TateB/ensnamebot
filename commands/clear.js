@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from "@discordjs/builders"
-import { confirmations, db, guildPromptRef } from "../index.js"
 
 export const data = new SlashCommandBuilder()
   .setName("clear")
@@ -7,6 +6,8 @@ export const data = new SlashCommandBuilder()
   .setDefaultPermission(false)
 
 export async function execute(interaction) {
+  const { confirmations, db, guildPromptRef } = await import("../index.js")
+
   const confirmsToClear = confirmations.filter((x) => x.type === "request")
   return interaction
     .deferReply({ ephemeral: true })

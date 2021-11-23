@@ -1,5 +1,5 @@
 import { SlashCommandSubcommandBuilder } from "@discordjs/builders"
-import { globalChecks } from "../index.js"
+import { MessageEmbed } from "discord.js"
 
 export const data = new SlashCommandSubcommandBuilder()
   .setName("list")
@@ -9,12 +9,13 @@ export const data = new SlashCommandSubcommandBuilder()
   )
 
 export async function execute(interaction) {
-  const page = interaction.options.getInteger("page")
+  const { globalChecks } = await import("../../index.js")
+
+  const page = interaction.options.getInteger("page") || { value: 1 }
   const commandEmbed = new MessageEmbed().setColor("#52e5ff")
 
   // if no page specified, default to first page
   // slice 25 results based on page
-  page.value ||= 1
   commandEmbed.setTitle(`Global Checks: Page ${page.value}`)
   globalChecks.slice((page.value - 1) * 25, 25).forEach((check, inx) => {
     commandEmbed.addField(

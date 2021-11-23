@@ -55,10 +55,6 @@ for listing users and their corresponding regex check
 
 #### other
 
-##### `/refresh`
-
-refreshes the permissions for the provided role ids in the config.
-
 ##### `/normalise <string>`
 
 normalises a string so it can be used in regex

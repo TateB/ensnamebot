@@ -1,5 +1,5 @@
 import { SlashCommandSubcommandBuilder, userMention } from "@discordjs/builders"
-import { db, importantUsers } from "../index.js"
+import { MessageEmbed } from "discord.js"
 
 export const data = new SlashCommandSubcommandBuilder()
   .setName("remove")
@@ -12,6 +12,8 @@ export const data = new SlashCommandSubcommandBuilder()
   )
 
 export async function execute(interaction) {
+  const { db, importantUsers } = await import("../../index.js")
+
   const commandEmbed = new MessageEmbed().setColor("#52e5ff")
   const user = interaction.options.getUser("user")
   const userEntry = importantUsers.find((x) => x.id === user.id)

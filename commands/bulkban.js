@@ -1,6 +1,5 @@
 import { SlashCommandBuilder, userMention } from "@discordjs/builders"
 import { MessageActionRow, MessageButton, MessageEmbed } from "discord.js"
-import { confirmations, db } from "../index.js"
 
 export const data = new SlashCommandBuilder()
   .setName("bulkban")
@@ -42,6 +41,8 @@ export const data = new SlashCommandBuilder()
   )
 
 export async function execute(interaction) {
+  const { confirmations, db } = await import("../index.js")
+
   const type = interaction.options.getSubcommand()
   var startTime
   var endTime

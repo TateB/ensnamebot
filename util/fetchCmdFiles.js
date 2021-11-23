@@ -18,18 +18,24 @@ export async function fetchCmdFiles(dir) {
   // recursively load all subdirectories/subcommands
   for (const directory of directories) {
     const subcommands = await fetchCmdFiles(`${dir}/${directory}`)
-    let command = commands.find((command) => command.data.name === directory)
+    const commandInx = commands.findIndex(
+      (command) => command.data.name === directory
+    )
+    let command = commands[commandInx]
     subcommands.forEach((cmd) => command.data.addSubcommand(cmd.data))
     // clone command and add subcommands
     command = { ...command, subcommands }
     // set execute function to execute subcommand
-    command.execute = (interaction) =>
+    command.execute = async (interaction) =>
       command.subcommands
         .find(
           (subcommand) =>
             subcommand.data.name === interaction.options.getSubcommand()
         )
         .execute(interaction)
+
+    // assign props to obj
+    commands[commandInx] = command
   }
 
   return commands

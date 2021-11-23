@@ -1,5 +1,4 @@
 import { SlashCommandBuilder } from "@discordjs/builders"
-import { runSweep } from "../util/sweep"
 
 export const data = new SlashCommandBuilder()
   .setName("sweep")
@@ -7,6 +6,8 @@ export const data = new SlashCommandBuilder()
   .setDefaultPermission(false)
 
 export async function execute(interaction) {
+  const { runSweep } = await import("../util/sweep.js")
+
   return interaction
     .deferReply({ ephemeral: true })
     .then(() => runSweep())

@@ -1,6 +1,6 @@
 import { SlashCommandSubcommandBuilder, userMention } from "@discordjs/builders"
+import { MessageEmbed } from "discord.js"
 import unhomoglyph from "unhomoglyph"
-import { db, importantUsers } from "../index.js"
 
 export const data = new SlashCommandSubcommandBuilder()
   .setName("add")
@@ -13,6 +13,8 @@ export const data = new SlashCommandSubcommandBuilder()
   )
 
 export async function execute(interaction) {
+  const { db, importantUsers } = await import("../../index.js")
+
   const commandEmbed = new MessageEmbed().setColor("#52e5ff")
   const user = interaction.options.getUser("user")
   const expression = `(^.*)(${unhomoglyph(user.username)})(.*$)`

@@ -1,5 +1,5 @@
 import { SlashCommandSubcommandBuilder } from "@discordjs/builders"
-import { db, globalChecks } from "../../index.js"
+import { MessageEmbed } from "discord.js"
 
 export const data = new SlashCommandSubcommandBuilder()
   .setName("add")
@@ -23,6 +23,8 @@ export const data = new SlashCommandSubcommandBuilder()
   )
 
 export async function execute(interaction) {
+  const { db, globalChecks } = await import("../../index.js")
+
   const type = interaction.options.get("type").value
   const expression = interaction.options.get("expression").value
   const commandEmbed = new MessageEmbed().setColor("#52e5ff")
