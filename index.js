@@ -7,6 +7,8 @@ import { startListeners } from "./listeners/listeners.js"
 import { refreshPermissions } from "./util/refreshPermissions.js"
 import { startSweepInterval } from "./util/sweep.js"
 
+console.log("starting...")
+
 export const {
   banConfirmations,
   guildId,
