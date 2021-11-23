@@ -74,7 +74,7 @@ export async function submitBan(
         .setStyle("DANGER")
     )
 
-    banEmbed.setTitle("User Autobanned")
+    banEmbed.setTitle("New Event: User Autobanned")
     guildLogRef
       .send({ embeds: [banEmbed], components: [buttons] })
       .then((message) =>
