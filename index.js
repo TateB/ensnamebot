@@ -3,7 +3,10 @@ import { readFileSync } from "fs"
 import { JSONFile, Low } from "lowdb"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"
+import { fetchSetButtons } from "./listeners/buttons.js"
+import { fetchSetCommands } from "./listeners/commands.js"
 import { startListeners } from "./listeners/listeners.js"
+import { logToConsole } from "./util/logToConsole.js"
 import { refreshPermissions } from "./util/refreshPermissions.js"
 import { startSweepInterval } from "./util/sweep.js"
 
@@ -62,7 +65,9 @@ client.once("ready", () => {
     .fetch()
     .then((guilds) =>
       guilds.forEach((guild) =>
-        guild.id !== guildId ? guild.leave() : console.log("guild confirmed!")
+        guild.id !== guildId
+          ? guild.leave()
+          : logToConsole("init", "Guild confirmed!")
       )
     )
 
@@ -75,7 +80,13 @@ client.once("ready", () => {
 
   // make sure permissions are always correct
   refreshPermissions()
-  console.log("bot ready")
+  logToConsole("init", "Bot ready!")
+
+  // fetch and set commands so they can be used with command handler
+  fetchSetCommands(client)
+
+  // fetch and set buttons so they can be used with button handler
+  fetchSetButtons(client)
 
   // set guildlogref and store in cache
   guildLogRef = localGuild.channels.cache.get(channelIds.logs)
@@ -84,7 +95,9 @@ client.once("ready", () => {
 
 // make sure that the guild joined is correct, or else leave immediately
 client.on("guildCreate", (guild) =>
-  guild.id !== guildId ? guild.leave() : console.log("guild confirmed!")
+  guild.id !== guildId
+    ? guild.leave()
+    : logToConsole("init", "Guild confirmed!")
 )
 
 startListeners()

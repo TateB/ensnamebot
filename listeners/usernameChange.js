@@ -6,9 +6,14 @@ import {
   membersNameChanged,
 } from "../index.js"
 import { globalExpCheck, importantUserCheck } from "../util/checks.js"
+import { logToConsole } from "../util/logToConsole.js"
 import { submitBan } from "../util/submitBan.js"
 
 export async function usernameChangeListener(oldUser, newUser) {
+  logToConsole(
+    "userUpdate",
+    `${newUser.id} | ${oldUser.username} -> ${newUser.username}`
+  )
   // if username hasn't changed, the member update doesn't matter
   if (oldUser.username === newUser.username) return
 

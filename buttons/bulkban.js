@@ -2,9 +2,16 @@ import { userMention } from "@discordjs/builders"
 import { MessageEmbed } from "discord.js"
 import { confirmations, db, guildLogRef } from "../index.js"
 
+export const name = "bulkban"
+
 // bulk ban function for banning users between specific timestamps.
-export async function bulkBan(interaction, confirmation, confirmationIndex) {
-  if (interaction.customId === "cancel-bulk") {
+export async function execute(
+  interaction,
+  confirmation,
+  confirmationIndex,
+  type
+) {
+  if (type === "cancel") {
     const newLogEmbed = new MessageEmbed()
       .setColor("#52e5ff")
       .setTitle("Bulk Ban Cancelled")
@@ -20,13 +27,13 @@ export async function bulkBan(interaction, confirmation, confirmationIndex) {
     .setTitle("Banning Members...")
   // date for calculating estimated time
   const startedAt = Date.now()
-  var bannedNum = 0
-  var totalBans = 0
-  var percent = 0
-  var erroredUsers = 0
+  var bannedNum = 0,
+    totalBans = 0,
+    percent = 0,
+    erroredUsers = 0
 
   // defer update because it might take a while before the first message comes through
-  interaction
+  return interaction
     .update({
       embeds: [new MessageEmbed().setTitle("Starting bulk ban...")],
       components: [],

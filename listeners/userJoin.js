@@ -1,9 +1,11 @@
 import unhomoglyph from "unhomoglyph"
 import { banConfirmations, importantUsers, membersJoined } from "../index.js"
 import { globalExpCheck, importantUserCheck } from "../util/checks.js"
+import { logToConsole } from "../util/logToConsole.js"
 import { submitBan } from "../util/submitBan.js"
 
 export async function userJoinListener(member) {
+  logToConsole("userJoin", `${member.id} | ${member.user.username}`)
   // normalise username
   member.user.username = unhomoglyph(member.user.username)
   const { id } = member
