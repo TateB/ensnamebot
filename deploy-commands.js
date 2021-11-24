@@ -1,7 +1,7 @@
 import { REST } from "@discordjs/rest"
 import { Routes } from "discord-api-types/v9"
 import { readFileSync } from "fs"
-import { fetchCmdFiles } from "./util/fetchCmdFiles.js"
+import { fetchCmdFiles } from "./util/fetchFiles.js"
 const { guildId, clientId, token } = JSON.parse(readFileSync("./config.json"))
 
 const commands = await fetchCmdFiles("commands").then((commands) =>

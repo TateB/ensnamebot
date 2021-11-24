@@ -100,11 +100,11 @@ export async function execute(interaction) {
         components: [
           new MessageActionRow().addComponents(
             new MessageButton()
-              .setCustomId("ban-bulk")
+              .setCustomId("bulkban-banall")
               .setLabel("Ban All")
               .setStyle("DANGER"),
             new MessageButton()
-              .setCustomId("cancel-bulk")
+              .setCustomId("bulkban-cancel")
               .setLabel("Cancel")
               .setStyle("SUCCESS")
           ),

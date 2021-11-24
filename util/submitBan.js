@@ -43,13 +43,16 @@ export async function submitBan(
 
   if (confirmationNeeded) {
     const buttons = new MessageActionRow().addComponents(
-      new MessageButton().setCustomId("ban").setLabel("Ban").setStyle("DANGER"),
       new MessageButton()
-        .setCustomId("cancel")
+        .setCustomId("requestban-ban")
+        .setLabel("Ban")
+        .setStyle("DANGER"),
+      new MessageButton()
+        .setCustomId("requestban-cancel")
         .setLabel("Cancel")
         .setStyle("SUCCESS"),
       new MessageButton()
-        .setCustomId("ignore")
+        .setCustomId("requestban-ignore")
         .setLabel("Ignore")
         .setStyle("SECONDARY")
     )
@@ -69,7 +72,7 @@ export async function submitBan(
     // confirmation not needed, so user can be banned immediately
     const buttons = new MessageActionRow().addComponents(
       new MessageButton()
-        .setCustomId("revert")
+        .setCustomId("autoban-revert")
         .setLabel("Revert")
         .setStyle("DANGER")
     )

@@ -1,9 +1,9 @@
 import { Collection } from "discord.js"
-import { fetchCmdFiles } from "../util/fetchCmdFiles.js"
+import { fetchCmdFiles } from "../util/fetchFiles.js"
 
 export async function fetchSetCommands(client) {
   client.commands = new Collection()
-  await fetchCmdFiles("commands").then((fetchedCmds) =>
+  return await fetchCmdFiles("commands").then((fetchedCmds) =>
     fetchedCmds.forEach((cmd) => client.commands.set(cmd.data.name, cmd))
   )
 }

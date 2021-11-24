@@ -40,3 +40,18 @@ export async function fetchCmdFiles(dir) {
 
   return commands
 }
+
+// dynamically load all button files
+export async function fetchBtnFiles() {
+  const buttons = []
+  const buttonFiles = readdirSync(`./buttons`).filter((file) =>
+    file.endsWith("js")
+  )
+
+  for (const file of buttonFiles) {
+    const button = await import(`../buttons/${file}`)
+    buttons.push(button)
+  }
+
+  return buttons
+}

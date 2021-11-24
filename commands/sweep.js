@@ -11,5 +11,5 @@ export async function execute(interaction) {
   return interaction
     .deferReply({ ephemeral: true })
     .then(() => runSweep())
-    .then(() => interaction.reply("Manual sweep complete!"))
+    .then(() => interaction.editReply("Manual sweep complete!"))
 }

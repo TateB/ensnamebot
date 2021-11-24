@@ -25,6 +25,8 @@ export const data = new SlashCommandBuilder()
   )
 
 export async function execute(interaction) {
+  const { submitBan } = await import("../util/submitBan.js")
+
   const user = interaction.options.getUser("user")
   const type = interaction.options.get("type").value
   const reason = interaction.options.get("reason").value
@@ -35,5 +37,5 @@ export async function execute(interaction) {
     "emulation",
     type === "autoban" ? false : true
   )
-  return interaction.reply("Emulating ban...")
+  return interaction.reply({ content: "Emulating ban...", ephemeral: true })
 }

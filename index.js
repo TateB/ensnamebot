@@ -3,6 +3,7 @@ import { readFileSync } from "fs"
 import { JSONFile, Low } from "lowdb"
 import { dirname, join } from "path"
 import { fileURLToPath } from "url"
+import { fetchSetButtons } from "./listeners/buttons.js"
 import { fetchSetCommands } from "./listeners/commands.js"
 import { startListeners } from "./listeners/listeners.js"
 import { refreshPermissions } from "./util/refreshPermissions.js"
@@ -80,6 +81,9 @@ client.once("ready", () => {
 
   // fetch and set commands so they can be used with command handler
   fetchSetCommands(client)
+
+  // fetch and set buttons so they can be used with button handler
+  fetchSetButtons(client)
 
   // set guildlogref and store in cache
   guildLogRef = localGuild.channels.cache.get(channelIds.logs)
