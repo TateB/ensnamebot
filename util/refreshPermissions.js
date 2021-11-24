@@ -1,4 +1,5 @@
 import { client, clientId, guildId, permittedRoleIds } from "../index.js"
+import { logToConsole } from "./logToConsole.js"
 
 export async function refreshPermissions() {
   const localGuild = client.guilds.cache.get(guildId)
@@ -27,6 +28,12 @@ export async function refreshPermissions() {
         )
       )
     )
-    .then(() => console.log("permissions verified and set"))
-    .catch(console.error)
+    .then(() => logToConsole("permissions", "Permissions refreshed and set"))
+    .catch((err) =>
+      logToConsole(
+        "permissions",
+        `Failed to refresh permissions - ${err.message}`,
+        true
+      )
+    )
 }

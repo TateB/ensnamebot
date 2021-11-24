@@ -2,6 +2,7 @@ import { userMention } from "@discordjs/builders"
 import { MessageEmbed } from "discord.js"
 import { confirmations, db } from "../index.js"
 import { createLogEntryWithTimeout } from "../util/logCreator.js"
+import { logToConsole } from "../util/logToConsole.js"
 
 export const name = "autoban"
 
@@ -24,7 +25,7 @@ export async function execute(
       .unban(confirmation.member.id || confirmation.member.userId)
       .then(() => (userUnbanned = true))
       .catch((err) => {
-        console.error(err)
+        logToConsole("autoban", `Unban failed - ${err.message}`, true)
       })
   } else {
     userUnbanned = true

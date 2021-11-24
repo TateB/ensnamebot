@@ -1,6 +1,7 @@
 import { Collection } from "discord.js"
 import { confirmations } from "../index.js"
 import { fetchBtnFiles } from "../util/fetchFiles.js"
+import { logToConsole } from "../util/logToConsole.js"
 
 export async function fetchSetButtons(client) {
   client.buttons = new Collection()
@@ -30,14 +31,15 @@ export async function buttonListener(interaction) {
   const type = interaction.customId.split("-")[1]
   const button = interaction.client.buttons.get(category)
   try {
-    return await button.execute(
-      interaction,
-      confirmation,
-      confirmationIndex,
-      type
-    )
+    logToConsole("buttons", `Received button event ${interaction.customId}`)
+    await button.execute(interaction, confirmation, confirmationIndex, type)
+    logToConsole("buttons", `Completed button event ${interaction.customId}`)
   } catch (error) {
-    console.error(error)
+    logToConsole(
+      "buttons",
+      `Error executing button event ${interaction.customId} - ${error.message}`,
+      true
+    )
     return await interaction.reply({
       content: "There was an error processing your interaction.",
       ephemeral: true,

@@ -6,6 +6,7 @@ import { fileURLToPath } from "url"
 import { fetchSetButtons } from "./listeners/buttons.js"
 import { fetchSetCommands } from "./listeners/commands.js"
 import { startListeners } from "./listeners/listeners.js"
+import { logToConsole } from "./util/logToConsole.js"
 import { refreshPermissions } from "./util/refreshPermissions.js"
 import { startSweepInterval } from "./util/sweep.js"
 
@@ -64,7 +65,9 @@ client.once("ready", () => {
     .fetch()
     .then((guilds) =>
       guilds.forEach((guild) =>
-        guild.id !== guildId ? guild.leave() : console.log("guild confirmed!")
+        guild.id !== guildId
+          ? guild.leave()
+          : logToConsole("init", "Guild confirmed!")
       )
     )
 
@@ -77,7 +80,7 @@ client.once("ready", () => {
 
   // make sure permissions are always correct
   refreshPermissions()
-  console.log("bot ready")
+  logToConsole("init", "Bot ready!")
 
   // fetch and set commands so they can be used with command handler
   fetchSetCommands(client)
@@ -92,12 +95,11 @@ client.once("ready", () => {
 
 // make sure that the guild joined is correct, or else leave immediately
 client.on("guildCreate", (guild) =>
-  guild.id !== guildId ? guild.leave() : console.log("guild confirmed!")
+  guild.id !== guildId
+    ? guild.leave()
+    : logToConsole("init", "Guild confirmed!")
 )
 
 startListeners()
 
-client
-  .login(token)
-  .then()
-  .catch((err) => console.log(err))
+client.login(token)

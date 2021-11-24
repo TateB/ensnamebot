@@ -2,6 +2,7 @@ import { userMention } from "@discordjs/builders"
 import { MessageEmbed } from "discord.js"
 import { confirmations, db, ignoredUsers } from "../index.js"
 import { createLogEntryWithTimeout } from "../util/logCreator.js"
+import { logToConsole } from "../util/logToConsole.js"
 
 export const name = "requestban"
 
@@ -19,7 +20,9 @@ export async function execute(
       user: confirmation.member.id || confirmation.member.userId,
       force: true,
     })
-    .catch(console.error)
+    .catch((err) =>
+      logToConsole("requestban", `Failed to fetch user - ${err.message}`, true)
+    )
 
   // if the member couldn't be found, inform user and return
   if (!targetMember) {
@@ -62,7 +65,15 @@ export async function execute(
       )
       // if ban is emulation, don't actually ban. otherwise ban user
       if (confirmation.type !== "request-emu")
-        targetMember.ban().catch(console.error)
+        targetMember
+          .ban()
+          .catch((err) =>
+            logToConsole(
+              "requestban",
+              `Failed to ban user - ${err.message}`,
+              true
+            )
+          )
       confirmations.splice(confirmationIndex, 1)
       db.write()
       return createLogEntryWithTimeout(newLogEmbed, interaction)

@@ -7,6 +7,7 @@ import {
   guildPromptRef,
   ignoredUsers,
 } from "../index.js"
+import { logToConsole } from "./logToConsole.js"
 
 // submits ban embed to log channel, if confirmationNeeded, wait for reaction before banning
 export async function submitBan(
@@ -68,6 +69,12 @@ export async function submitBan(
         })
       )
       .then(() => db.write())
+      .then(() =>
+        logToConsole(
+          "submitBan",
+          `${member.user.id} | Submitted ban request for ${username}`
+        )
+      )
   } else {
     // confirmation not needed, so user can be banned immediately
     const buttons = new MessageActionRow().addComponents(
@@ -89,5 +96,11 @@ export async function submitBan(
       )
       .then(() => db.write())
       .then(() => (eventName === "emulation" ? null : member.ban()))
+      .then(() =>
+        logToConsole(
+          "submitBan",
+          `${member.user.id} | Autobanned user ${username}`
+        )
+      )
   }
 }

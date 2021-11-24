@@ -7,6 +7,7 @@ export const data = new SlashCommandBuilder()
 
 export async function execute(interaction) {
   const { confirmations, db, guildPromptRef } = await import("../index.js")
+  const { logToConsole } = await import("../util/logToConsole.js")
 
   const confirmsToClear = confirmations.filter((x) => x.type === "request")
   return interaction
@@ -19,7 +20,13 @@ export async function execute(interaction) {
           return guildPromptRef.messages
             .fetch(confirm.id)
             .then((msg) => msg.delete())
-            .catch(console.error)
+            .catch((err) =>
+              logToConsole(
+                "clear",
+                `Failed to clear prompts - ${err.message}`,
+                true
+              )
+            )
         })
       )
     )
