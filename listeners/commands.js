@@ -25,9 +25,16 @@ export async function commandListener(interaction) {
       `Error executing command /${interaction.commandName} - ${error.message}`,
       true
     )
-    await interaction.reply({
-      content: "There was an error processing your command.",
-      ephemeral: true,
-    })
+    await interaction
+      .reply({
+        content: "There was an error processing your command.",
+        ephemeral: true,
+      })
+      .catch(() =>
+        interaction.editReply({
+          content: "There was an error processing your command.",
+          ephemeral: true,
+        })
+      )
   }
 }

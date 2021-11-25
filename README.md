@@ -67,6 +67,10 @@ emulates a ban. used for testing.
 
 bulkbans users that joined between a certain time period
 
+##### `/bulkkick [graceperiod]`
+
+bulk kicks users that don't have a role, that joined before the grace period (in days)
+
 ##### `/clear`
 
 clears all prompts in the prompts channel
