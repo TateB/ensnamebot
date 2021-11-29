@@ -15,7 +15,7 @@
     "discord-api-types": "^0.24.0",
     "discord.js": "^13.3.1",
     "lowdb": "^3.0.0",
-    "unhomoglyph": "^1.0.6"
+    "unhomoglyph": "git+https://github.com/TateB/unhomoglyph.git"
   },
   "prettier": {
     "semi": false
